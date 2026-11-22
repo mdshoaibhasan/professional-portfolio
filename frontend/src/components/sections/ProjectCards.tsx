@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { SpecList } from "@/components/ui/SpecList";
 import { Tag, TagList } from "@/components/ui/Tag";
-import type { ProjectDetail, ProjectStatus } from "@/types/content";
+import type { ProjectListItem, ProjectStatus } from "@/types/content";
 
 const statusLabel: Record<ProjectStatus, string> = {
   "pre-launch": "Pre-launch",
@@ -16,7 +16,7 @@ export function ProjectStatusTag({ status }: { status: ProjectStatus }) {
 }
 
 /** Large featured card with spec sheet. Used once per page, with the page's single glow. */
-export function FeaturedProjectCard({ project }: { project: ProjectDetail }) {
+export function FeaturedProjectCard({ project }: { project: ProjectListItem }) {
   return (
     <article className="glow-behind">
       <div className="relative rounded-lg border border-line bg-surface p-6 sm:p-7">
@@ -50,7 +50,7 @@ export function ProjectCard({
   project,
   headingLevel = 3,
 }: {
-  project: ProjectDetail;
+  project: ProjectListItem;
   headingLevel?: 2 | 3;
 }) {
   const Heading = headingLevel === 2 ? "h2" : "h3";

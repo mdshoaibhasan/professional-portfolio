@@ -1,4 +1,5 @@
-import { site } from "@/content/site";
+import { useSiteContent } from "@/app/site-content";
+import { displayName } from "@/lib/display";
 
 interface SeoProps {
   title?: string;
@@ -10,7 +11,9 @@ interface SeoProps {
  * Canonical/Open Graph/JSON-LD are injected server-side by Django in Milestone 8 (D-006).
  */
 export function Seo({ title, description }: SeoProps) {
-  const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
+  const { profile } = useSiteContent();
+  const name = displayName(profile);
+  const fullTitle = title ? `${title} — ${name}` : `${name} — ${profile.headline}`;
   return (
     <>
       <title>{fullTitle}</title>

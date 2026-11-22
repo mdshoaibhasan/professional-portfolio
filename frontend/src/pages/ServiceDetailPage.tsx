@@ -1,11 +1,10 @@
 import { ArrowLeft, ArrowRight, Check, Info, Minus } from "lucide-react";
 import type { ReactNode } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useLoaderData } from "react-router";
+import type { serviceLoader } from "@/app/loaders";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Seo } from "@/components/ui/Seo";
-import { findService, services } from "@/content/services";
-import NotFoundPage from "@/pages/NotFoundPage";
 
 function ListBlock({ title, items, icon }: { title: string; items: string[]; icon: ReactNode }) {
   return (
@@ -24,10 +23,7 @@ function ListBlock({ title, items, icon }: { title: string; items: string[]; ico
 }
 
 export default function ServiceDetailPage() {
-  const service = findService(useParams().slug);
-  if (!service) return <NotFoundPage />;
-
-  const others = services.filter((other) => other.slug !== service.slug);
+  const { service, others } = useLoaderData<typeof serviceLoader>();
   const contactLink = `/contact?service=${service.slug}`;
 
   return (

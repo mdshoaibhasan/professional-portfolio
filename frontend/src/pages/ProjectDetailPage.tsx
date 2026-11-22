@@ -1,5 +1,6 @@
 import { ArrowLeft, ExternalLink } from "lucide-react";
-import { Link, useParams } from "react-router";
+import { Link, useLoaderData } from "react-router";
+import type { projectLoader } from "@/app/loaders";
 import { ContactCta } from "@/components/sections/ContactCta";
 import { ProjectStatusTag } from "@/components/sections/ProjectCards";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -7,12 +8,9 @@ import { Seo } from "@/components/ui/Seo";
 import { SpecList } from "@/components/ui/SpecList";
 import { TagList } from "@/components/ui/Tag";
 import { Todo } from "@/components/ui/Todo";
-import { findProject } from "@/content/projects";
-import NotFoundPage from "@/pages/NotFoundPage";
 
 export default function ProjectDetailPage() {
-  const project = findProject(useParams().slug);
-  if (!project) return <NotFoundPage />;
+  const project = useLoaderData<typeof projectLoader>();
 
   return (
     <>

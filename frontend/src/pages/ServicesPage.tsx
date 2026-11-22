@@ -4,9 +4,11 @@ import { SecondaryServices, ServiceCard } from "@/components/sections/ServiceCar
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/ui/Section";
 import { Seo } from "@/components/ui/Seo";
-import { services } from "@/content/services";
+import { useLoaderData } from "react-router";
+import type { servicesLoader } from "@/app/loaders";
 
 export default function ServicesPage() {
+  const services = useLoaderData<typeof servicesLoader>();
   const primary = services.filter((service) => service.tier === "primary");
   const secondary = services.filter((service) => service.tier === "secondary");
   return (

@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Seo } from "@/components/ui/Seo";
 import { Fact, Todo } from "@/components/ui/Todo";
-import { profile } from "@/content/profile";
+import { useSiteContent } from "@/app/site-content";
 
 /**
  * DRAFT privacy policy describing the site as designed (docs/ARCHITECTURE.md §4, §7).
@@ -20,6 +20,7 @@ function Block({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export default function PrivacyPage() {
+  const { profile } = useSiteContent();
   return (
     <>
       <Seo
@@ -40,7 +41,8 @@ export default function PrivacyPage() {
         <Block title="Who is responsible">
           <p>
             This website is run by <Fact value={profile.name} missing="your name" />, a software
-            developer based in {profile.location_public}. For any privacy question, contact{" "}
+            developer based in <Fact value={profile.location_public} missing="location" />. For any
+            privacy question, contact{" "}
             <Fact value={profile.email_public} missing="privacy contact email" />.
           </p>
         </Block>

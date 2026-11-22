@@ -1,10 +1,10 @@
 import { Mail, MessageCircle } from "lucide-react";
-import { useSearchParams } from "react-router";
+import { useLoaderData, useSearchParams } from "react-router";
+import type { servicesLoader } from "@/app/loaders";
+import { useSiteContent } from "@/app/site-content";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Seo } from "@/components/ui/Seo";
 import { Fact, Todo } from "@/components/ui/Todo";
-import { profile } from "@/content/profile";
-import { findService } from "@/content/services";
 
 const checklist = [
   "What you want to build, and the problem it solves",
@@ -14,8 +14,10 @@ const checklist = [
 ];
 
 export default function ContactPage() {
+  const { profile } = useSiteContent();
+  const services = useLoaderData<typeof servicesLoader>();
   const [params] = useSearchParams();
-  const service = findService(params.get("service") ?? undefined);
+  const service = services.find((item) => item.slug === params.get("service"));
 
   return (
     <>

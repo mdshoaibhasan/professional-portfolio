@@ -4,9 +4,10 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/ui/Section";
 import { Seo } from "@/components/ui/Seo";
 import { Todo } from "@/components/ui/Todo";
-import { profile } from "@/content/profile";
+import { useSiteContent } from "@/app/site-content";
 
 export default function AboutPage() {
+  const { profile } = useSiteContent();
   return (
     <>
       <Seo

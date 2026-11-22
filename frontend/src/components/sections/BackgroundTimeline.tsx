@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Fact, Todo } from "@/components/ui/Todo";
-import { certifications, education, experience } from "@/content/profile";
+import { useSiteContent } from "@/app/site-content";
 
 interface ItemProps {
   headingLevel: 2 | 3;
@@ -26,6 +26,7 @@ function Item({ headingLevel, when, title, detail }: ItemProps) {
 
 /** Combined experience, education and certification timeline (DESIGN_SYSTEM §7). */
 export function BackgroundTimeline({ headingLevel = 3 }: { headingLevel?: 2 | 3 }) {
+  const { experience, education, certifications } = useSiteContent();
   return (
     <ol className="border-l border-line-strong">
       {experience.map((item, index) => (

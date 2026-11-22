@@ -1,5 +1,7 @@
 import { ArrowRight } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useLoaderData } from "react-router";
+import type { homeLoader } from "@/app/loaders";
+import { useSiteContent } from "@/app/site-content";
 import { BackgroundTimeline } from "@/components/sections/BackgroundTimeline";
 import { ContactCta } from "@/components/sections/ContactCta";
 import { ProcessSteps } from "@/components/sections/ProcessSteps";
@@ -11,11 +13,10 @@ import { Section } from "@/components/ui/Section";
 import { Seo } from "@/components/ui/Seo";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { Fact, Todo } from "@/components/ui/Todo";
-import { profile } from "@/content/profile";
-import { projects } from "@/content/projects";
-import { services } from "@/content/services";
 
 export default function HomePage() {
+  const { profile } = useSiteContent();
+  const { projects, services } = useLoaderData<typeof homeLoader>();
   const featured = projects.find((project) => project.is_featured);
   const primaryServices = services.filter((service) => service.tier === "primary");
   const secondaryServices = services.filter((service) => service.tier === "secondary");
@@ -36,7 +37,8 @@ export default function HomePage() {
             </h1>
             <p className="mt-6 max-w-[60ch] text-body-lg text-fg-secondary">
               I design and build backend-driven web applications — from data models and REST APIs to
-              the interfaces people use. Based in {profile.location_public}, available for remote
+              the interfaces people use. Based in{" "}
+              <Fact value={profile.location_public} missing="location" />, available for remote
               projects.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -107,8 +109,8 @@ export default function HomePage() {
             </p>
             <p>
               My background is in Computer Science and Engineering, and I&rsquo;m based in{" "}
-              {profile.location_public}. Alongside development, I bring hands-on experience in{" "}
-              {profile.strengths.join(", ").toLowerCase()}.
+              <Fact value={profile.location_public} missing="location" />. Alongside development, I
+              bring hands-on experience in {profile.strengths.join(", ").toLowerCase()}.
             </p>
             <Link to="/about" className="inline-flex items-center gap-2 font-display text-base">
               More about me <ArrowRight size={16} aria-hidden="true" />

@@ -1,6 +1,7 @@
-import { processSteps } from "@/content/profile";
+import { useSiteContent } from "@/app/site-content";
 
 export function ProcessSteps() {
+  const { process_steps: processSteps } = useSiteContent();
   return (
     <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {processSteps.map((step, index) => (

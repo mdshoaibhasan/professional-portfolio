@@ -94,3 +94,23 @@ the automated test count (suite not executed), the repository link, and the owne
 ### D-020 · 2026-11-23 · Accepted (owner, 2026-11-23)
 **Status-neutral education wording** ("My background is in Computer Science and Engineering") until the owner confirms
 graduation status — the expected graduation month (November 2026) is the current month.
+
+### D-021 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**One `/api/v1/site/` endpoint** for profile, social links, skills, experience, education, certifications and process
+steps (needed by the layout and most pages). Homepage needs 3 requests instead of 8. Projects and services keep
+their own list/detail endpoints.
+
+### D-022 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**No `django-cors-headers`.** Vite proxies `/api` in development and production is same-domain, so CORS never applies.
+
+### D-023 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**Content lives in the database, loaded by React Router loaders.** Frontend fixtures were exported to
+`backend/apps/profiles/seed/content.json` and removed; `seed_content` loads them (only into empty tables). Backend
+tests assert the API returns exactly the seeded content. Page-level API errors render inside the layout; if the API
+is down, a standalone error page is shown.
+
+### D-024 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**API safety defaults:** DRF denies by default (`IsAuthenticated`), public views opt in via a read-only base
+(GET/HEAD/OPTIONS only, `AllowAny`); JSON-only renderer in production; anonymous throttle 120/min backed by the
+database cache in production (D-009). `Profile` refuses a second create instead of silently overwriting.
+HSTS include-subdomains/preload stay off (their deploy-check warnings are silenced on purpose) until Milestone 10.

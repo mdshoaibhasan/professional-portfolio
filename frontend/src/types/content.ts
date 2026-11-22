@@ -1,6 +1,6 @@
 /**
  * Content types. Field names mirror the planned Django REST API (docs/ARCHITECTURE.md §3)
- * so the fixtures in src/content can be swapped for API calls in Milestone 5 (D-007).
+ * and are checked against it by the backend's round-trip tests (apps/profiles/tests.py).
  *
  * Convention: a fact the owner has not supplied yet is `null`, never invented.
  * The UI renders `null` facts with the <Todo> placeholder component.
@@ -55,6 +55,7 @@ export interface CaseStudySection {
 
 export interface ProjectDetail extends ProjectSummary {
   role: string | null;
+  cover_image: string | null;
   period: string | null;
   repo_url: string | null;
   live_url: string | null;
@@ -85,6 +86,7 @@ export interface Profile {
   location_public: string | null;
   email_public: string | null;
   whatsapp_public: string | null;
+  photo: string | null;
   open_to_work: boolean;
   availability_note: string;
   strengths: string[];
@@ -119,4 +121,18 @@ export interface CertificationItem {
 export interface ProcessStep {
   title: string;
   text: string;
+}
+
+/** Project as returned by the list endpoint (no case-study sections). */
+export type ProjectListItem = Omit<ProjectDetail, "sections">;
+
+/** GET /api/v1/site/ — layout and homepage content in one request. */
+export interface SiteContent {
+  profile: Profile;
+  social_links: SocialLink[];
+  skills: Skill[];
+  experience: ExperienceItem[];
+  education: EducationItem[];
+  certifications: CertificationItem[];
+  process_steps: ProcessStep[];
 }

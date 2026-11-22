@@ -1,0 +1,425 @@
+{
+  "profile": {
+    "name": null,
+    "headline": "Python & Django Developer",
+    "short_bio": null,
+    "long_bio": null,
+    "location_public": "Bangladesh",
+    "email_public": null,
+    "whatsapp_public": null,
+    "open_to_work": true,
+    "availability_note": "Available for freelance projects",
+    "strengths": [
+      "Team operations",
+      "Customer handling",
+      "Workflow coordination",
+      "Professional communication"
+    ]
+  },
+  "skills": [
+    {
+      "name": "Python",
+      "category": "language",
+      "level_label": null
+    },
+    {
+      "name": "HTML",
+      "category": "language",
+      "level_label": null
+    },
+    {
+      "name": "Dart",
+      "category": "language",
+      "level_label": "Basic"
+    },
+    {
+      "name": "Django",
+      "category": "framework",
+      "level_label": null
+    },
+    {
+      "name": "Django REST Framework",
+      "category": "framework",
+      "level_label": null
+    },
+    {
+      "name": "REST API development",
+      "category": "framework",
+      "level_label": null
+    },
+    {
+      "name": "Bootstrap 5",
+      "category": "framework",
+      "level_label": null
+    },
+    {
+      "name": "Flutter",
+      "category": "framework",
+      "level_label": "Basic"
+    },
+    {
+      "name": "SQLite",
+      "category": "data",
+      "level_label": null
+    },
+    {
+      "name": "Git & GitHub",
+      "category": "tool",
+      "level_label": null
+    },
+    {
+      "name": "Postman",
+      "category": "tool",
+      "level_label": null
+    },
+    {
+      "name": "Linux",
+      "category": "tool",
+      "level_label": "Basic"
+    }
+  ],
+  "experience": [
+    {
+      "title": null,
+      "organization": null,
+      "start_date": null,
+      "end_date": null,
+      "is_current": false,
+      "summary": "Operations role covering team operations, customer handling and workflow coordination.",
+      "highlights": []
+    }
+  ],
+  "education": [
+    {
+      "institution": null,
+      "degree": "Computer Science and Engineering",
+      "start_year": null,
+      "status_label": null
+    }
+  ],
+  "certifications": [
+    {
+      "name": null,
+      "issuer": null,
+      "issue_date": null,
+      "credential_url": null,
+      "topic": "Python-based web application development"
+    }
+  ],
+  "process_steps": [
+    {
+      "title": "Discover",
+      "text": "We talk through your goals, users and constraints so the problem is clear before any code is written."
+    },
+    {
+      "title": "Plan",
+      "text": "You get a written scope with milestones, timeline and cost, so there are no surprises later."
+    },
+    {
+      "title": "Build",
+      "text": "I build in small, reviewable steps and share progress regularly so you can give feedback early."
+    },
+    {
+      "title": "Launch & support",
+      "text": "I help deploy, hand over documentation, and fix issues that come up after launch."
+    }
+  ],
+  "projects": [
+    {
+      "slug": "backgroundbridge",
+      "title": "BackgroundBridge",
+      "summary": "A privacy-conscious public-information search and reporting platform, engineered for shared hosting.",
+      "status": "pre-launch",
+      "is_featured": true,
+      "technologies": [
+        "Python",
+        "Django",
+        "Django REST Framework",
+        "httpx (async)",
+        "ReportLab"
+      ],
+      "role": null,
+      "period": "2026",
+      "repo_url": null,
+      "live_url": null,
+      "specs": [
+        {
+          "label": "Stack",
+          "value": "Django 5.2 · DRF · async httpx · ReportLab · HTMX"
+        },
+        {
+          "label": "Scope",
+          "value": "12 Django app packages · 37 data models"
+        },
+        {
+          "label": "Hosting",
+          "value": "Designed for shared cPanel hosting"
+        },
+        {
+          "label": "Role",
+          "value": null
+        }
+      ],
+      "highlights": [
+        "Concurrent multi-source search",
+        "Audited payment state machine",
+        "Privacy by design"
+      ],
+      "sections": [
+        {
+          "id": "overview",
+          "title": "Overview",
+          "body": [
+            "BackgroundBridge lets a user search by name, username, email, phone number or social profile link, review the possible matches, and receive a report — on screen and as a PDF — in which every finding is labelled with where it came from.",
+            "The project is pre-launch. Its own launch-readiness review identified legal and compliance questions that must be resolved before it can go live, and I treat that as part of the engineering work rather than an afterthought."
+          ],
+          "points": []
+        },
+        {
+          "id": "problem",
+          "title": "The problem",
+          "body": [
+            "Public information about a person is scattered across many platforms, and naïve aggregation creates two risks: wrong matches presented as facts, and disregard for the privacy of the people being searched. The platform had to be accurate about what it knows, honest about what it doesn't, and respectful of people who ask to be removed."
+          ],
+          "points": []
+        },
+        {
+          "id": "constraints",
+          "title": "Constraints",
+          "body": [
+            "The target environment was shared cPanel hosting — no Redis, no Celery, no Docker in production, and only cron for scheduled work."
+          ],
+          "points": [
+            {
+              "title": "Database-backed job queue",
+              "text": "Background work runs from a task table with leased locks, stale-lease recovery and exponential back-off, processed by a cron-driven worker."
+            },
+            {
+              "title": "Database cache",
+              "text": "Caching and rate limiting use Django's database cache, so they work across hosting worker processes without extra services."
+            }
+          ]
+        },
+        {
+          "id": "architecture",
+          "title": "Architecture",
+          "body": [
+            "A modular Django monolith of 12 app packages and 37 data models, with server-rendered templates enhanced by HTMX and Alpine.js, and a REST API built with Django REST Framework."
+          ],
+          "points": [
+            {
+              "title": "Asynchronous provider layer",
+              "text": "Thirteen source adapters run concurrently with httpx and asyncio, so one slow source does not hold up the others. Platforms without an open API are limited to official, consent-based access."
+            },
+            {
+              "title": "Search pipeline",
+              "text": "Results flow through collect → merge → de-duplicate → rank stages before candidates are shown."
+            },
+            {
+              "title": "Environment-specific settings",
+              "text": "Separate development and production settings, with production refusing to start if security-critical configuration is missing."
+            }
+          ]
+        },
+        {
+          "id": "accuracy",
+          "title": "Accuracy & trust",
+          "body": [],
+          "points": [
+            {
+              "title": "No silent merging",
+              "text": "Rule-based similarity matching only merges records above a fixed threshold. Weaker links are shown as possible matches for the user to confirm or reject — never merged automatically."
+            },
+            {
+              "title": "Labelled evidence",
+              "text": "Each finding carries an evidence label — matched, source-reported, unverified or derived — and its source, so readers can see what was confirmed and what was not."
+            },
+            {
+              "title": "Official sanctions screening",
+              "text": "Names are screened against the official sanctions lists published by the US, UN, EU and UK, imported by a dedicated command designed to run daily."
+            }
+          ]
+        },
+        {
+          "id": "security",
+          "title": "Security & privacy by design",
+          "body": [],
+          "points": [
+            {
+              "title": "Protected administration",
+              "text": "Staff access to the admin requires a time-based second factor, and repeated failed sign-ins lock the account."
+            },
+            {
+              "title": "Safe outbound requests",
+              "text": "Requests to external sources may only follow HTTPS redirects and can never be redirected to internal addresses."
+            },
+            {
+              "title": "Removal requests that stick",
+              "text": "People can request removal. Approved removals go into a suppression list that stores keyed hashes rather than the original identifiers, and suppressed profiles are excluded from future results."
+            },
+            {
+              "title": "Hardened defaults",
+              "text": "HTTPS enforcement with HSTS, secure cookies, and strict framing and cross-origin policies."
+            }
+          ]
+        },
+        {
+          "id": "payments",
+          "title": "Payments & reports",
+          "body": [],
+          "points": [
+            {
+              "title": "Auditable payment state machine",
+              "text": "Every payment status change goes through a single function that locks the record and writes an audit entry. Webhooks are signature-verified and processed exactly once, and report credits are deducted with locked, conditional updates."
+            },
+            {
+              "title": "Multilingual PDF reports",
+              "text": "Reports are generated as PDFs with bundled fonts, including correct Bengali text shaping, and the interface is available in five languages."
+            }
+          ]
+        },
+        {
+          "id": "quality",
+          "title": "Quality",
+          "body": [
+            "The project includes an automated test suite, and continuous integration runs Django's system checks, a check for missing database migrations, the tests, and a dependency vulnerability audit on every push."
+          ],
+          "points": []
+        },
+        {
+          "id": "status",
+          "title": "Status & next steps",
+          "body": [
+            "BackgroundBridge is not live. The remaining work before launch is a legal and compliance review for the markets it would serve, followed by independent security verification."
+          ],
+          "points": []
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "slug": "website-development",
+      "title": "Website Development",
+      "tier": "primary",
+      "summary": "Fast, responsive business and personal websites with clean, maintainable code.",
+      "description": "A clear, fast and professional website for an individual, small business or organisation — built to work well on phones first, and easy to keep up to date.",
+      "ideal_for": "Professionals, small businesses and organisations that need a reliable online presence.",
+      "includes": [
+        "Responsive layout for phones, tablets and desktops",
+        "Pages and sections agreed in the written scope",
+        "Contact form or inquiry links",
+        "Basic on-page SEO: page titles, descriptions and a sitemap",
+        "Help with domain, hosting setup and deployment",
+        "Handover notes so you know how the site is maintained"
+      ],
+      "excludes": [
+        "Copywriting and photography, unless agreed in the scope",
+        "Logo and brand identity design",
+        "Hosting and domain fees, which you pay to the provider directly"
+      ],
+      "benefits": [
+        "Loads quickly, including on mobile connections",
+        "Clean structure that is easy to extend later",
+        "You own the code and the content"
+      ],
+      "scope_note": null
+    },
+    {
+      "slug": "web-app-api-development",
+      "title": "Web Application & API Development",
+      "tier": "primary",
+      "summary": "Django and Django REST Framework applications: data models, admin, authentication and APIs.",
+      "description": "Backend-driven web applications built with Python, Django and Django REST Framework — from the data model and admin panel to secure, documented APIs that web or mobile front-ends can use.",
+      "ideal_for": "Internal tools, dashboards, data-driven websites, and backends for web or mobile apps.",
+      "includes": [
+        "Data modelling and database design",
+        "Django admin for managing your data",
+        "REST API endpoints with validation and authentication",
+        "Automated tests for the core logic",
+        "Deployment guidance and technical documentation"
+      ],
+      "excludes": [
+        "Large-scale distributed infrastructure",
+        "Native mobile apps (see Mobile Application Development)"
+      ],
+      "benefits": [
+        "Maintainable, conventional Django structure",
+        "Secure defaults: validation, permissions and safe configuration",
+        "A documented API that other developers can build on"
+      ],
+      "scope_note": null
+    },
+    {
+      "slug": "mobile-app-development",
+      "title": "Mobile Application Development",
+      "tier": "primary",
+      "summary": "Simple Flutter apps and MVPs connected to a Django backend.",
+      "description": "Small, focused mobile apps built with Flutter, connected to a Django REST API — a practical way to test an idea or give existing customers a simple app.",
+      "ideal_for": "Prototypes, MVPs and small apps with a clear, limited set of features.",
+      "includes": [
+        "Flutter app with the screens agreed in the scope",
+        "Integration with a Django REST API (new or existing)",
+        "Android build for testing and release"
+      ],
+      "excludes": [
+        "Large or highly complex apps",
+        "Advanced native device features",
+        "App store marketing"
+      ],
+      "benefits": [
+        "One backend serving both the website and the app",
+        "A working version early, so you can test the idea with real users"
+      ],
+      "scope_note": "My Flutter and Dart experience is at a foundational level, so I take on small, well-scoped mobile projects."
+    },
+    {
+      "slug": "social-media-management",
+      "title": "Social Media Page Management",
+      "tier": "secondary",
+      "summary": "Consistent, well-organised management of business social media pages.",
+      "description": "Organised, consistent management of your business pages, so they stay active and customers get timely responses.",
+      "ideal_for": "Small businesses that want an active, professional page without managing it daily.",
+      "includes": [
+        "Page setup and profile information review",
+        "Content calendar planned with you",
+        "Scheduling and posting of agreed content",
+        "Responding to messages and comments within agreed limits",
+        "A short monthly summary of page activity"
+      ],
+      "excludes": [
+        "Paid advertising budget",
+        "Professional photo and video production"
+      ],
+      "benefits": [
+        "A consistent, professional presence",
+        "Faster, more reliable replies to customers"
+      ],
+      "scope_note": null
+    },
+    {
+      "slug": "social-media-advertising",
+      "title": "Social Media Boosting & Advertising",
+      "tier": "secondary",
+      "summary": "Planning and running boosted posts and ad campaigns on social platforms.",
+      "description": "Help planning and running boosted posts and ad campaigns, with the budget and audience agreed with you in advance.",
+      "ideal_for": "Businesses that want to promote a post, offer or page to a defined local audience.",
+      "includes": [
+        "Campaign setup on the agreed platform",
+        "Audience and budget planning with you",
+        "Boosting selected posts",
+        "Monitoring and adjusting during the campaign",
+        "A summary of the results reported by the platform"
+      ],
+      "excludes": [
+        "Ad spend, which is paid by you directly to the platform",
+        "Guaranteed sales, leads or follower numbers"
+      ],
+      "benefits": [
+        "Clear budget control",
+        "Transparent reporting based on platform data"
+      ],
+      "scope_note": null
+    }
+  ]
+}

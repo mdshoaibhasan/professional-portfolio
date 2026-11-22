@@ -1,0 +1,11 @@
+[tool.ruff]
+line-length = 110
+target-version = "py310"  # lowest Python that Django 5.2 supports; host version still unknown
+extend-exclude = ["apps/*/migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "DJ", "S"]
+ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"apps/*/tests.py" = ["S603", "S106"]  # subprocess with fixed argv; deliberately weak test secrets

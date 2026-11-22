@@ -3,9 +3,10 @@ import { ContactCta } from "@/components/sections/ContactCta";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/ui/Section";
 import { Seo } from "@/components/ui/Seo";
-import { profile } from "@/content/profile";
+import { useSiteContent } from "@/app/site-content";
 
 export default function ExperiencePage() {
+  const { profile } = useSiteContent();
   return (
     <>
       <Seo

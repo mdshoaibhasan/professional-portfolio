@@ -16,8 +16,8 @@ The flagship case study is **BackgroundBridge**, a Python/Django project whose c
 
 | Item | Status |
 |---|---|
-| Current milestone | **Milestone 5 — Django Backend (in progress, approved 2026-11-23)** |
-| Next milestone | Milestone 6 — Contact System (**not approved yet**) |
+| Current milestone | **Milestone 6 — Contact System (in progress, approved 2026-11-23)** |
+| Next milestone | Milestone 7 — Admin & Content Management (**not approved yet**) |
 | Hosting | Unknown — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
 | BackgroundBridge source | Inspected read-only 2026-11-23 → [docs/BACKGROUNDBRIDGE_AUDIT.md](docs/BACKGROUNDBRIDGE_AUDIT.md). Pre-launch; never describe it as live. |
 
@@ -64,7 +64,7 @@ personal-portfolio/
 ```
 
 - Frontend: React, TypeScript (strict), Vite, Tailwind CSS, React Router, Lucide, React Hook Form, Zod, Motion (sparingly).
-- Backend: Django 5.2 LTS (proposed, pending host Python check), DRF, SQLite. Modular apps: `profiles`, `projects`, `services`, `inquiries` (proposed; see DECISIONS D-005).
+- Backend: Django 5.2 LTS, DRF, SQLite. Apps: `profiles`, `projects`, `services` (+ `inquiries` in Milestone 6). Site content lives in the database (seeded from `backend/apps/profiles/seed/content.json`) and reaches the frontend through route loaders.
 - API under `/api/v1/`. Django Admin at a non-default path. Same-domain deployment preferred.
 
 ## 6. Coding conventions
@@ -102,7 +102,10 @@ Frontend (run inside `frontend/`, details in [frontend/README.md](frontend/READM
 - `npm run dev` — dev server on :5173 · `npm run build` — production build · `npm run preview` — serve the build
 - `npm run check` — type-check + lint + Prettier check (**must pass before any commit**)
 
-Backend: added in Milestone 5.
+Backend (run inside `backend/`, details in [backend/README.md](backend/README.md)):
+- `.venv/Scripts/python.exe manage.py runserver` — API on :8000 · `manage.py test` — test suite
+- `.venv/Scripts/ruff.exe check . && .venv/Scripts/ruff.exe format --check .` — lint/format (**must pass before any commit**)
+- `manage.py seed_content` — initial content (never overwrites admin edits)
 
 ## 8. Local environment (observed 2026-11-23)
 

@@ -9,7 +9,9 @@ import {
 } from "react";
 import { Link, NavLink, useLocation } from "react-router";
 import { buttonClasses } from "@/components/ui/button-styles";
-import { contactNavItem, primaryNav, site } from "@/content/site";
+import { useSiteContent } from "@/app/site-content";
+import { contactNavItem, primaryNav } from "@/content/site";
+import { displayName } from "@/lib/display";
 import { cn } from "@/lib/cn";
 
 function subscribeToScroll(onChange: () => void) {
@@ -32,6 +34,7 @@ const desktopLink = ({ isActive }: { isActive: boolean }) =>
   );
 
 export function Navbar() {
+  const { profile } = useSiteContent();
   const scrolled = useScrolled();
   const { pathname } = useLocation();
   // The menu is open only for the path it was opened on, so any navigation
@@ -99,7 +102,7 @@ export function Navbar() {
             to="/"
             className="font-display text-[1.05rem] font-semibold tracking-tight whitespace-nowrap text-fg no-underline"
           >
-            {site.name}
+            {displayName(profile)}
             <span className="text-primary-text">.</span>
           </Link>
 

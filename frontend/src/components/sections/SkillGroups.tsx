@@ -1,11 +1,13 @@
 import { Tag } from "@/components/ui/Tag";
-import { skillCategoryLabels, skills } from "@/content/profile";
+import { useSiteContent } from "@/app/site-content";
+import { skillCategoryLabels } from "@/content/site";
 import type { SkillCategory } from "@/types/content";
 
 const order: SkillCategory[] = ["language", "framework", "data", "tool"];
 
 /** Skills grouped by category with honest level labels — no percentages (DESIGN_SYSTEM §7). */
 export function SkillGroups() {
+  const { skills } = useSiteContent();
   return (
     <dl className="grid gap-6 sm:grid-cols-2">
       {order.map((category) => (

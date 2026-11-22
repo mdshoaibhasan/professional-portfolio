@@ -8,8 +8,8 @@ Status legend: ✅ done · 🟡 awaiting approval · ⏳ not started · ⛔ bloc
 | 2 | Design System | ✅ Approved 2026-11-23 | — |
 | 3 | Frontend Foundation | ✅ Approved 2026-11-23 | — |
 | 4 | Public Website | ✅ Approved 2026-11-23 (placeholders until owner content arrives) | — |
-| 5 | Django Backend | 🔨 In progress | Host Python version (final pin) |
-| 6 | Contact System | ⏳ | M5; SMTP details |
+| 5 | Django Backend | ✅ Approved 2026-11-23 | Host Python version (final pin) |
+| 6 | Contact System | 🔨 In progress | SMTP details (console email until provided) |
 | 7 | Admin & Content Management | ⏳ | M5 |
 | 8 | SEO & Analytics | ⏳ | Domain name; consent approach |
 | 9 | Quality Assurance | ⏳ | M4–M8 |
@@ -80,7 +80,14 @@ Privacy Policy, 404.
 - Case study written only from inspected source (see ARCHITECTURE §8).
 - Acceptance: responsive at 360 / 768 / 1024 / 1440 px; reduced-motion respected; no console errors.
 
-## Milestone 5 — Django Backend
+## Milestone 5 — Django Backend ✅
+
+Delivered 2026-11-23: Django 5.2.19 LTS + DRF 3.18.3 backend (settings split, env config, prod fail-fast checks),
+apps `profiles` / `projects` / `services`, read-only public API (`/api/v1/site/`, `projects/`, `services/`),
+basic admin, idempotent `seed_content`. Frontend now loads all content via React Router loaders; local fixtures
+removed. Verified: 21 backend tests (incl. API ↔ seed round-trip, query count, prod `check --deploy`), ruff clean,
+no missing migrations; frontend check + build; 199/199 browser checks against the live API, 30/30 M3 regression,
+API-down fallback. `inquiries` app moved to Milestone 6.
 
 - Scaffold `backend/` (Django pinned to host-compatible version, DRF), settings split, env-based config.
 - Apps: `profiles`, `projects`, `services`, `inquiries` (D-005). Models, migrations, serializers, read-only viewsets.

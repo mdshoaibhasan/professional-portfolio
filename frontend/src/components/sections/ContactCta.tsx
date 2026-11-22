@@ -1,9 +1,10 @@
 import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Reveal } from "@/components/ui/Reveal";
-import { profile } from "@/content/profile";
+import { useSiteContent } from "@/app/site-content";
 
 export function ContactCta() {
+  const { profile } = useSiteContent();
   return (
     <section aria-labelledby="cta-title" className="border-t border-line py-section">
       <Reveal className="container-page">

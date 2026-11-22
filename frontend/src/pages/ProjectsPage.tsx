@@ -3,9 +3,11 @@ import { ProjectCard } from "@/components/sections/ProjectCards";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Seo } from "@/components/ui/Seo";
 import { Todo } from "@/components/ui/Todo";
-import { projects } from "@/content/projects";
+import { useLoaderData } from "react-router";
+import type { projectsLoader } from "@/app/loaders";
 
 export default function ProjectsPage() {
+  const projects = useLoaderData<typeof projectsLoader>();
   return (
     <>
       <Seo

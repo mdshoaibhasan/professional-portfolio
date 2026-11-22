@@ -52,7 +52,8 @@ never committed.
 1. `npm run build` (frontend) — verify output.
 2. Backend tests pass; `python manage.py check --deploy` clean with prod settings.
 3. Backup current database + media before upload.
-4. Upload code/build; install pinned requirements; `migrate`; `collectstatic`.
+4. Upload code/build; `pip install -r requirements/prod.txt` (needs Pillow — compiled package, see Q7); `migrate`;
+   `createcachetable` (first deploy only); `seed_content` (first deploy only); `collectstatic`.
 5. Restart the app; smoke test: home, case study, API endpoints, inquiry submit, admin login, 404 status, HTTPS redirect.
 6. Rollback plan: keep previous release directory + DB backup.
 

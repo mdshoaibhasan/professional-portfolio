@@ -1,20 +1,24 @@
 import { Link } from "react-router";
-import { primaryNav, site } from "@/content/site";
+import { useSiteContent } from "@/app/site-content";
+import { primaryNav } from "@/content/site";
+import { displayName } from "@/lib/display";
 
 export function Footer() {
+  const { profile, social_links: socials } = useSiteContent();
+  const name = displayName(profile);
   const year = new Date().getFullYear();
   return (
     <footer className="border-t border-line py-12 text-sm text-muted">
       <div className="container-page grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
         <div>
           <p className="font-display text-base font-semibold text-fg">
-            {site.name}
+            {name}
             <span className="text-primary-text">.</span>
           </p>
-          <p className="mt-2 max-w-xs">{site.role}</p>
-          {site.email && (
-            <a className="mt-4 inline-block" href={`mailto:${site.email}`}>
-              {site.email}
+          <p className="mt-2 max-w-xs">{profile.headline}</p>
+          {profile.email_public && (
+            <a className="mt-4 inline-block" href={`mailto:${profile.email_public}`}>
+              {profile.email_public}
             </a>
           )}
         </div>
@@ -40,7 +44,7 @@ export function Footer() {
         <div>
           <p className="label-mono text-muted">Elsewhere</p>
           <ul className="mt-3 space-y-2">
-            {site.socials.map((social) => (
+            {socials.map((social) => (
               <li key={social.url}>
                 <a
                   className="text-fg-secondary no-underline hover:text-fg"
@@ -62,7 +66,7 @@ export function Footer() {
       </div>
       <div className="container-page mt-10">
         <p>
-          © {year} {site.name}. All rights reserved.
+          © {year} {name}. All rights reserved.
         </p>
       </div>
     </footer>

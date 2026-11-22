@@ -67,7 +67,7 @@ frontend/src/
 ## 3. Backend
 
 - Django **5.2 LTS** proposed (security support to April 2028; Python 3.10–3.14). Final pin depends on the host's Python. *(open)*
-- Django REST Framework; `django-cors-headers` for **local development only** (Vite dev server on :5173).
+- Django REST Framework. No CORS package: Vite proxies `/api` to Django in development, so requests are always same-origin (D-022).
 - Settings: `config/settings/{base,dev,prod}.py`, env-driven (see `.env.example`).
 
 Proposed structure (created in M5):
@@ -78,9 +78,9 @@ backend/
 ├── config/            settings/, urls.py, wsgi.py
 ├── apps/
 │   ├── profiles/      Profile (singleton), SocialLink, Skill, Experience, Education, Certification
-│   ├── projects/      Project, ProjectImage, Technology
-│   ├── services/      Service, ServiceFeature
-│   └── inquiries/     Inquiry (+ notification service)
+│   ├── projects/      Project, ProjectSpec, CaseStudySection, CaseStudyPoint
+│   ├── services/      Service, ProcessStep
+│   └── inquiries/     Inquiry (+ notification service)   [Milestone 6]
 ├── templates/         spa_shell.html (SEO meta injection)
 └── requirements/      base.txt, dev.txt, prod.txt
 ```
@@ -115,13 +115,12 @@ Notes: no "skill percentage"; `level_label` only when truthful. Inquiry stores a
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/profile/` | Profile + social links + skills |
-| GET | `/experience/` · `/education/` · `/certifications/` | Lists |
+| GET | `/site/` | Profile, social links, skills, experience, education, certifications, process steps (one request — D-021) |
 | GET | `/projects/` · `/projects/{slug}/` | Published projects |
 | GET | `/services/` · `/services/{slug}/` | Active services |
 | POST | `/inquiries/` | Create inquiry (throttled, the only public write) |
 
-Responses are versioned, paginated where lists may grow, and cacheable (`Cache-Control`) for public GETs.
+Responses are versioned and cacheable (`Cache-Control: public, max-age=60`). Lists are small and unpaginated; add pagination if one grows past ~50 items. List fields edited in the admin are stored one-item-per-line and returned as arrays; missing facts are `null`. Technologies are a plain list on the project (no `Technology` model until filtering is needed).
 
 ## 4. Inquiry flow
 

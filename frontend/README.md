@@ -22,11 +22,11 @@ Node.js ≥ 22.22 (required by React Router 8). The production host does **not**
 
 ```
 src/
-├── app/          router (lazy per-page chunks), root layout, route error boundary
+├── app/          router (lazy chunks + data loaders), root layout, error boundary, useSiteContent
 ├── components/
 │   ├── layout/   Navbar (accessible mobile menu), Footer, SkipLink, PageHeader
 │   └── ui/       ButtonLink, button-styles, Seo, SectionLabel
-├── content/      typed local content (replaced by the Django API in Milestone 5)
+├── content/      static navigation config (site content comes from the API)
 ├── pages/        one component per route
 ├── types/        content types mirroring the planned API
 ├── lib/          small utilities
