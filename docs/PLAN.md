@@ -5,8 +5,8 @@ Status legend: ✅ done · 🟡 awaiting approval · ⏳ not started · ⛔ bloc
 | # | Milestone | Status | Blocked by |
 |---|---|---|---|
 | 1 | Project Audit & Planning | ✅ Approved 2026-11-23 (hosting + BackgroundBridge Q&A still open) | — |
-| 2 | Design System | 🔨 In progress | — |
-| 3 | Frontend Foundation | ⏳ | M2 |
+| 2 | Design System | ✅ Approved 2026-11-23 | — |
+| 3 | Frontend Foundation | 🔨 In progress | — |
 | 4 | Public Website | ⏳ | M3; content (CONTENT_CHECKLIST); BackgroundBridge inspection |
 | 5 | Django Backend | ⏳ | Host Python version (to pin Django) |
 | 6 | Contact System | ⏳ | M5; SMTP details |
@@ -33,7 +33,9 @@ Deliverables
 Note: BackgroundBridge inspection and hosting validation can be completed as an "M1 addendum" as soon as the
 information arrives; neither blocks M2 (design system).
 
-## Milestone 2 — Design System
+## Milestone 2 — Design System ✅
+
+Delivered: [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md), [design/preview.html](design/preview.html) (rendered and checked at 1440 px and 375 px in Edge), decisions D-011 to D-014.
 
 Goal: a documented, accessible visual language before any page is built.
 - Finalise color tokens (validated contrast table, AA minimum), including state colors (success/warn/error/focus).

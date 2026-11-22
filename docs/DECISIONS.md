@@ -47,10 +47,24 @@ exactly like the planned API responses; M5 swaps fixtures for API calls without 
 ### D-010 · 2026-11-23 · Accepted (owner, 2026-11-23)
 **Self-hosted fonts** (no Google Fonts CDN). Faster, no third-party request before consent, enables strict CSP.
 
-### D-011 · 2026-11-23 · Accepted direction (owner, 2026-11-23); finalised in M2
+### D-011 · 2026-11-23 · Accepted (owner, 2026-11-23)
 **Design token contrast adjustments** (finalised in M2). Approximate WCAG ratios on background `#080D18`:
 text `#F8FAFC` ≈ 18:1 ✅; muted `#94A3B8` ≈ 7.5:1 ✅; accent `#8B5CF6` ≈ 4.6:1 (borderline AA for body text);
 primary `#2563EB` ≈ 3.8:1 ❌ for body text/links (OK for large text, borders, button fills).
 White on `#2563EB` ≈ 5.2:1 ✅ (buttons OK); white on `#8B5CF6` ≈ 4.2:1 ❌ for normal text.
 *Proposal:* keep `#2563EB` for filled buttons; use a lighter blue (e.g., `#60A5FA`, ≈ 7.6:1) for links/text on dark;
 avoid white body text on violet fills. Exact values verified with a contrast tool in M2.
+
+### D-012 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**Homepage reduced from 13 listed sections to 8** (Hero incl. intro + technical highlights + BackgroundBridge spec card →
+Selected work → Services → About & stack → Process → Experience & education → Contact CTA → Footer).
+*Rationale:* spec asks to avoid unnecessary sections and to show identity + strongest project within seconds.
+On mobile the spec card falls below the first viewport, so the hero gets a one-line "Featured: BackgroundBridge →" link there.
+
+### D-013 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**Visual direction: Concept A "Engineering Spec"** (mono spec sheets, numbered sections, hairline grid, one glow per page)
+over Concept B "Editorial Studio". *Rationale:* credibility as a developer is the primary goal. See DESIGN_SYSTEM.md §1.
+
+### D-014 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**Final token adjustments:** form-field borders use `subtle #64748B` (meets 3:1 non-text contrast; `border-strong` at 1.88
+does not); white text on violet only on `accent-strong #7C3AED` (5.70); `#64748B` never used for text.

@@ -16,8 +16,8 @@ The flagship case study is **BackgroundBridge**, a Python/Django project whose c
 
 | Item | Status |
 |---|---|
-| Current milestone | **Milestone 2 — Design System (in progress, approved 2026-11-23)** |
-| Next milestone | Milestone 3 — Frontend Foundation (**not approved yet**) |
+| Current milestone | **Milestone 3 — Frontend Foundation (in progress, approved 2026-11-23)** |
+| Next milestone | Milestone 4 — Public Website (**not approved yet**) |
 | Hosting | Unknown — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
 | BackgroundBridge source | Inspected read-only 2026-11-23 → [docs/BACKGROUNDBRIDGE_AUDIT.md](docs/BACKGROUNDBRIDGE_AUDIT.md). Pre-launch; never describe it as live. |
 
