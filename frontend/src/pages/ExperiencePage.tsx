@@ -1,13 +1,40 @@
-import { BuildNotice } from "@/components/layout/BuildNotice";
+import { BackgroundTimeline } from "@/components/sections/BackgroundTimeline";
+import { ContactCta } from "@/components/sections/ContactCta";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { Section } from "@/components/ui/Section";
 import { Seo } from "@/components/ui/Seo";
+import { profile } from "@/content/profile";
 
 export default function ExperiencePage() {
   return (
     <>
-      <Seo title="Experience" description="Professional experience, education and certification." />
-      <PageHeader label="Experience" title="Experience & education" />
-      <BuildNotice />
+      <Seo
+        title="Experience"
+        description="Professional experience, education in Computer Science and Engineering, and certification in Python web application development."
+      />
+      <PageHeader label="Experience" title="Experience & education">
+        Operational experience, a Computer Science and Engineering degree, and a certification in
+        Python web application development.
+      </PageHeader>
+
+      <div className="container-page max-w-3xl py-section">
+        <BackgroundTimeline headingLevel={2} />
+      </div>
+
+      <Section id="skills" label="Transferable skills" title="What operations work taught me">
+        <ul className="flex flex-wrap gap-3">
+          {profile.strengths.map((strength) => (
+            <li
+              key={strength}
+              className="rounded-full border border-line-strong px-4 py-2 text-sm text-fg-secondary"
+            >
+              {strength}
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <ContactCta />
     </>
   );
 }

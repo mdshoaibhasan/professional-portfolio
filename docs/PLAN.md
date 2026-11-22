@@ -7,8 +7,8 @@ Status legend: ✅ done · 🟡 awaiting approval · ⏳ not started · ⛔ bloc
 | 1 | Project Audit & Planning | ✅ Approved 2026-11-23 (hosting + BackgroundBridge Q&A still open) | — |
 | 2 | Design System | ✅ Approved 2026-11-23 | — |
 | 3 | Frontend Foundation | ✅ Approved 2026-11-23 | — |
-| 4 | Public Website | 🔨 In progress | Owner content (placeholders until received) |
-| 5 | Django Backend | ⏳ | Host Python version (to pin Django) |
+| 4 | Public Website | ✅ Approved 2026-11-23 (placeholders until owner content arrives) | — |
+| 5 | Django Backend | 🔨 In progress | Host Python version (final pin) |
 | 6 | Contact System | ⏳ | M5; SMTP details |
 | 7 | Admin & Content Management | ⏳ | M5 |
 | 8 | SEO & Analytics | ⏳ | Domain name; consent approach |
@@ -65,7 +65,14 @@ reduced motion, 404 routes, no console errors). Lighthouse baseline deferred to 
   the backend exists (D-007).
 - Acceptance: `npm run build`, type-check, and lint pass; keyboard navigation works; Lighthouse baseline recorded.
 
-## Milestone 4 — Public Website
+## Milestone 4 — Public Website ✅
+
+Delivered 2026-11-23: all pages built (Home with 8 sections, About, Projects, BackgroundBridge case study, Services,
+5 service detail pages, Experience, Contact layout, Privacy policy draft, 404). Missing owner facts are `null` in
+`frontend/src/content/*` and render as visible `TODO:` placeholders (33 across the site, listed per page in the
+M4 report). The inquiry form itself is Milestone 6. Verified: `npm run check` clean, build OK, 193/193 browser
+checks (13 routes × 2 viewports: one h1, heading order, no overflow, reveal visibility, one glow max, metadata,
+no empty links; plus page-specific behaviour) and 30/30 M3 regression checks.
 
 Pages: Home, About, Projects, BackgroundBridge case study, Services, Service detail (×5), Experience, Contact (UI only),
 Privacy Policy, 404.

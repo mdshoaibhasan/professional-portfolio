@@ -1,30 +1,35 @@
-import { Link } from "react-router";
+import { ContactCta } from "@/components/sections/ContactCta";
+import { ProjectCard } from "@/components/sections/ProjectCards";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Seo } from "@/components/ui/Seo";
+import { Todo } from "@/components/ui/Todo";
 import { projects } from "@/content/projects";
 
 export default function ProjectsPage() {
   return (
     <>
-      <Seo title="Projects" description="Selected software projects and case studies." />
-      <PageHeader label="Projects" title="Selected work" />
+      <Seo
+        title="Projects"
+        description="Selected software projects and case studies, including BackgroundBridge, a Django-based public-information search and reporting platform."
+      />
+      <PageHeader label="Projects" title="Selected work">
+        Case studies written from the actual source code — what was built, how, and why.
+      </PageHeader>
       <div className="container-page py-section">
-        <ul className="grid gap-5 md:grid-cols-2">
+        <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
-            <li key={project.slug} className="rounded-lg border border-line bg-surface p-6">
-              <h2 className="text-h3">
-                <Link
-                  className="text-fg no-underline hover:underline"
-                  to={`/projects/${project.slug}`}
-                >
-                  {project.title}
-                </Link>
-              </h2>
-              <p className="mt-2 text-sm text-muted">{project.summary}</p>
+            <li key={project.slug}>
+              <ProjectCard project={project} headingLevel={2} />
             </li>
           ))}
         </ul>
+        {projects.length < 3 && (
+          <p className="mt-5 text-sm">
+            <Todo>add 2–3 more projects (CONTENT_CHECKLIST E)</Todo>
+          </p>
+        )}
       </div>
+      <ContactCta />
     </>
   );
 }

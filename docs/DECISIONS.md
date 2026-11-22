@@ -82,3 +82,15 @@ Tailwind's default palette is disabled so only approved colors can be used.
 **No test runner yet.** M3 verification uses type-check, lint, build and a scripted headless-browser check.
 Vitest + Testing Library will be proposed in M6, when the contact form adds real client-side logic.
 Motion, React Hook Form and Zod are also deferred until a component needs them.
+
+### D-018 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**Missing facts are `null`, rendered by `<Fact>` / `<Todo>`.** Placeholders are visible (dashed amber `TODO:` badge,
+`data-todo-content` attribute) so nothing invented can slip through; Milestone 9 adds a build check that fails if any remain.
+
+### D-019 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**Case-study content held back until the owner answers audit §8:** crypto payment providers, the "Protect" module,
+the automated test count (suite not executed), the repository link, and the owner's role. Wording uses only verified facts.
+
+### D-020 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**Status-neutral education wording** ("My background is in Computer Science and Engineering") until the owner confirms
+graduation status — the expected graduation month (November 2026) is the current month.

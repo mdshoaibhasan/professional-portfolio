@@ -16,6 +16,8 @@ export const router = createBrowserRouter([
     path: "/",
     Component: RootLayout,
     ErrorBoundary: RouteError,
+    // Shown only for the instant the first lazy page chunk loads.
+    HydrateFallback: () => <div className="min-h-dvh bg-canvas" />,
     children: [
       { index: true, lazy: page(() => import("@/pages/HomePage")) },
       { path: "about", lazy: page(() => import("@/pages/AboutPage")) },

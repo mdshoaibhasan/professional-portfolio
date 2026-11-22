@@ -85,6 +85,11 @@ Social Media Boosting & Advertising, Mobile App Development):
 
 ## H. Legal & business
 
+- [ ] **[R]** Typical reply time for inquiries (shown on the Contact page)
+- [ ] **[R]** Confirm the pricing statement on service pages: "Pricing is quoted per project after we agree the scope."
+- [ ] **[R]** Review the draft service descriptions in `frontend/src/content/services.ts` (scope, inclusions, exclusions)
+- [ ] **[R]** Review the draft Privacy Policy page (publication date, retention period, contact)
+
 - [ ] **[R]** Name/contact to appear as data controller in the Privacy Policy
 - [ ] **[R]** How long to keep inquiry data (proposal: 12 months, then delete)
 - [ ] **[R]** Notification email address for inquiries (🔒 may differ from public email)

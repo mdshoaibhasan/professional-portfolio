@@ -16,8 +16,8 @@ The flagship case study is **BackgroundBridge**, a Python/Django project whose c
 
 | Item | Status |
 |---|---|
-| Current milestone | **Milestone 4 — Public Website (in progress, approved 2026-11-23)** |
-| Next milestone | Milestone 5 — Django Backend (**not approved yet**) |
+| Current milestone | **Milestone 5 — Django Backend (in progress, approved 2026-11-23)** |
+| Next milestone | Milestone 6 — Contact System (**not approved yet**) |
 | Hosting | Unknown — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
 | BackgroundBridge source | Inspected read-only 2026-11-23 → [docs/BACKGROUNDBRIDGE_AUDIT.md](docs/BACKGROUNDBRIDGE_AUDIT.md). Pre-launch; never describe it as live. |
 
@@ -40,7 +40,8 @@ Update this table whenever a milestone changes state. Progress detail lives in [
 
 - Use **only verified information** about the owner. Never invent: dates, employers, qualifications, client counts,
   statistics, testimonials, revenue, achievements, skills, project features, company names, or partnerships.
-- Missing content → use a visible placeholder in code: `TODO(content): <what is needed>` and make sure it is listed in
+- Missing content → set the field to `null` in `frontend/src/content/*` (rendered by `<Fact>` / `<Todo>` as a visible
+  placeholder), or use a `TODO(content): <what is needed>` comment, and make sure it is listed in
   [docs/CONTENT_CHECKLIST.md](docs/CONTENT_CHECKLIST.md). Placeholders must never ship to production (QA checks for `TODO(content)`).
 - **No** fake skill percentage bars, fake metrics, fake testimonials, or fake logos.
 - Skill levels must match reality: Flutter/Dart and Linux are **basic**. Do not upgrade them in copy.

@@ -53,7 +53,7 @@ Largest apps: reports (~5.7k), subscriptions (~4.3k), search (~4.1k), protection
 | # | Feature | Evidence |
 |---|---|---|
 | F1 | Concurrent multi-source search: async providers via `httpx.AsyncClient`, run with `asyncio.gather` | `apps/providers/base.py:90-96`, `apps/providers/registry.py:54` |
-| F2 | 14 provider adapters: GitHub, Gravatar, Bluesky, Mastodon, Brave, Tavily, Serper, WhiteBridge, Twitter/X, Facebook; LinkedIn/Instagram/TikTok as official/consent-only stubs | `apps/providers/providers.py:271-1055` |
+| F2 | 13 registered provider adapters: GitHub, Gravatar, Bluesky, Mastodon, Brave, Tavily, Serper, WhiteBridge, Twitter/X, Facebook; LinkedIn/Instagram/TikTok limited to official/consent-based access (*corrected 2026-11-23: earlier count of 14 included the `OfficialConsentProvider` base class*) | `apps/providers/registry.py:20-34`, `apps/providers/providers.py:271-1055` |
 | F3 | Search pipeline: background job → orchestrator → merge → dedupe → rank | `apps/search/pipeline/jobs.py:15-66`, `apps/search/services/orchestrator.py:11-109` |
 | F4 | Rule-based identity matching (difflib similarity, merge threshold 0.78; "possible match" links scored below threshold and never auto-merged) | `apps/ai/matching.py:3-90` |
 | F5 | DB-backed job queue with leasing, retries, backoff | `apps/api/db_tasks.py` |
@@ -68,6 +68,7 @@ Largest apps: reports (~5.7k), subscriptions (~4.3k), search (~4.1k), protection
 | F14 | SSRF-style outbound guard: provider redirects must stay HTTPS and never go to IPs/localhost | `apps/providers/base.py:18-74` |
 | F15 | Security settings: HSTS (preload), secure/HttpOnly/SameSite cookies, nosniff, `X-Frame-Options: DENY`, COOP/COEP, referrer policy | `settings/production.py:24-29`, `settings/base.py:49-71` |
 | F16 | Internationalization in 5 languages incl. Bengali | `settings/base.py:290-297`, `locale/` |
+| F20 | Evidence labels Matched / Source-reported / Unverified / Derived; DB cache (`AtomicDatabaseCache`) in production, also used by rate limiting; HTMX 2.0.4 + Alpine 3.17.5 self-hosted | `apps/reports/evidence.py:144-254`, `settings/base.py:442-490`, `static/vendor/` (verified 2026-11-23) |
 | F17 | Data retention purge command; privacy/data-access request flows; abuse reporting | ⚠️ files exist (`apps/api/retention.py`, `apps/reports/removal_views.py`, urls verified in `apps/reports/urls.py`); logic not traced line by line |
 | F18 | Owner-only "Protect": HIBP breach checks, Gravatar exposure, Pwned Passwords k-anonymity check | ⚠️ URLs verified (`apps/protection/urls.py`); internals not traced; HIBP needs an API key |
 | F19 | REST API: health, JWT auth, searches, profiles, plans, subscriptions, webhooks | `apps/api/urls.py` (routes verified; permissions per docs ⚠️) |
