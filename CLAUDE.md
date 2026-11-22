@@ -16,8 +16,8 @@ The flagship case study is **BackgroundBridge**, a Python/Django project whose c
 
 | Item | Status |
 |---|---|
-| Current milestone | **Milestone 3 — Frontend Foundation (in progress, approved 2026-11-23)** |
-| Next milestone | Milestone 4 — Public Website (**not approved yet**) |
+| Current milestone | **Milestone 4 — Public Website (in progress, approved 2026-11-23)** |
+| Next milestone | Milestone 5 — Django Backend (**not approved yet**) |
 | Hosting | Unknown — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
 | BackgroundBridge source | Inspected read-only 2026-11-23 → [docs/BACKGROUNDBRIDGE_AUDIT.md](docs/BACKGROUNDBRIDGE_AUDIT.md). Pre-launch; never describe it as live. |
 
@@ -97,8 +97,11 @@ personal-portfolio/
 
 ## 7. Commands
 
-Not yet available — no application code exists. This section will be filled in Milestones 3 and 5
-(e.g. `npm run dev`, `npm run build`, `python manage.py runserver`, `python manage.py test`).
+Frontend (run inside `frontend/`, details in [frontend/README.md](frontend/README.md)):
+- `npm run dev` — dev server on :5173 · `npm run build` — production build · `npm run preview` — serve the build
+- `npm run check` — type-check + lint + Prettier check (**must pass before any commit**)
+
+Backend: added in Milestone 5.
 
 ## 8. Local environment (observed 2026-11-23)
 

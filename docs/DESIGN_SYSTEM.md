@@ -34,7 +34,7 @@ All ratios computed with the WCAG 2.x formula (not estimated). Thresholds: body 
 
 | Token | Hex | Role | on `bg` | on `surface` | on `raised` | Verdict |
 |---|---|---|---|---|---|---|
-| `bg` | `#080D18` | Page background | — | — | — | |
+| `bg` (code: `canvas`) | `#080D18` | Page background | — | — | — | |
 | `surface` | `#111827` | Cards, sections | — | — | — | |
 | `surface-raised` | `#172033` | Hover cards, menus, inputs | — | — | — | |
 | `text` | `#F8FAFC` | Headings, body | 18.57 | 16.96 | 15.55 | ✅ AAA |

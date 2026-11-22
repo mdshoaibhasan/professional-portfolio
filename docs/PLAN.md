@@ -6,8 +6,8 @@ Status legend: ✅ done · 🟡 awaiting approval · ⏳ not started · ⛔ bloc
 |---|---|---|---|
 | 1 | Project Audit & Planning | ✅ Approved 2026-11-23 (hosting + BackgroundBridge Q&A still open) | — |
 | 2 | Design System | ✅ Approved 2026-11-23 | — |
-| 3 | Frontend Foundation | 🔨 In progress | — |
-| 4 | Public Website | ⏳ | M3; content (CONTENT_CHECKLIST); BackgroundBridge inspection |
+| 3 | Frontend Foundation | ✅ Approved 2026-11-23 | — |
+| 4 | Public Website | 🔨 In progress | Owner content (placeholders until received) |
 | 5 | Django Backend | ⏳ | Host Python version (to pin Django) |
 | 6 | Contact System | ⏳ | M5; SMTP details |
 | 7 | Admin & Content Management | ⏳ | M5 |
@@ -49,7 +49,13 @@ Goal: a documented, accessible visual language before any page is built.
 
 Acceptance: owner approves direction; contrast table passes AA.
 
-## Milestone 3 — Frontend Foundation
+## Milestone 3 — Frontend Foundation ✅
+
+Delivered 2026-11-23: Vite 8 + React 19 + TypeScript 6 (strict) + Tailwind 4 tokens + React Router 8 (lazy routes),
+self-hosted fonts, layout shell (skip link, accessible navbar/mobile menu, footer, 404, error boundary), page stubs for
+every route, typed content fixtures. Verified: `npm run check` clean, production build OK (initial JS ≈ 105 KB gzip),
+30/30 automated browser checks in headless Edge (navigation, focus trap, Escape, scroll lock, 375 px overflow,
+reduced motion, 404 routes, no console errors). Lighthouse baseline deferred to M9 (no Lighthouse tooling installed).
 
 - Scaffold `frontend/` with Vite + React + TypeScript (strict) + Tailwind CSS; ESLint + Prettier.
 - Design tokens → Tailwind theme; self-hosted fonts.

@@ -1,5 +1,43 @@
 # frontend/
 
-React + TypeScript + Vite + Tailwind CSS single-page application.
+React + TypeScript + Vite + Tailwind CSS single-page application. See
+[../docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) §2 and [../docs/DESIGN_SYSTEM.md](../docs/DESIGN_SYSTEM.md).
 
-Scaffolded in **Milestone 3** (not started). See [../docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) section 2.
+## Requirements
+
+Node.js ≥ 22.22 (required by React Router 8). The production host does **not** need Node — the site is built locally.
+
+## Commands
+
+| Command           | What it does                                                            |
+| ----------------- | ----------------------------------------------------------------------- |
+| `npm install`     | Install dependencies                                                    |
+| `npm run dev`     | Dev server on http://localhost:5173 (`/api` proxied to Django on :8000) |
+| `npm run build`   | Type-check, then production build to `dist/`                            |
+| `npm run preview` | Serve the production build locally                                      |
+| `npm run check`   | Type-check + ESLint + Prettier check (run before every commit)          |
+| `npm run format`  | Format all files with Prettier                                          |
+
+## Structure
+
+```
+src/
+├── app/          router (lazy per-page chunks), root layout, route error boundary
+├── components/
+│   ├── layout/   Navbar (accessible mobile menu), Footer, SkipLink, PageHeader
+│   └── ui/       ButtonLink, button-styles, Seo, SectionLabel
+├── content/      typed local content (replaced by the Django API in Milestone 5)
+├── pages/        one component per route
+├── types/        content types mirroring the planned API
+├── lib/          small utilities
+└── styles/       Tailwind entry + design tokens (@theme)
+```
+
+## Conventions
+
+- Colors come only from the design tokens in `src/styles/index.css`; Tailwind's default palette is disabled.
+  Token classes: `bg-canvas`, `bg-surface`, `bg-raised`, `text-fg`, `text-fg-secondary`, `text-muted`,
+  `text-primary-text`, `text-accent-text`, `border-line`, `border-line-strong`, `border-subtle`, …
+- `bg-primary` is a fill only; never use it (or `subtle`/`accent`) for text.
+- Page metadata via `<Seo title description />` (React 19 hoists it into `<head>`).
+- Placeholders that need owner content are marked `TODO(content)` and must be gone before launch.

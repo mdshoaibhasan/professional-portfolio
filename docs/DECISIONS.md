@@ -68,3 +68,17 @@ over Concept B "Editorial Studio". *Rationale:* credibility as a developer is th
 ### D-014 · 2026-11-23 · Accepted (owner, 2026-11-23)
 **Final token adjustments:** form-field borders use `subtle #64748B` (meets 3:1 non-text contrast; `border-strong` at 1.88
 does not); white text on violet only on `accent-strong #7C3AED` (5.70); `#64748B` never used for text.
+
+### D-015 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**TypeScript 6.0 instead of 7.0.** TS 7 (native Go port) is the latest release, but `typescript-eslint` supports only
+`<6.1`. Revisit when typescript-eslint adds TS 7 support. Also: `baseUrl` removed (deprecated in TS 6); `paths` used alone.
+
+### D-016 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**Token class names in code:** `canvas` (page bg), `fg` / `fg-secondary` (text), `line` / `line-strong` (borders) replace
+`bg` / `text` / `border` from DESIGN_SYSTEM.md, which would otherwise produce `bg-bg`, `text-text`, `border-border`.
+Tailwind's default palette is disabled so only approved colors can be used.
+
+### D-017 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**No test runner yet.** M3 verification uses type-check, lint, build and a scripted headless-browser check.
+Vitest + Testing Library will be proposed in M6, when the contact form adds real client-side logic.
+Motion, React Hook Form and Zod are also deferred until a component needs them.
