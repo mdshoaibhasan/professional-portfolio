@@ -1,0 +1,63 @@
+# ── Secrets & environment ───────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+secrets/
+
+# ── Python / Django ─────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
+db.sqlite3*
+backend/media/
+media/
+backend/staticfiles/
+staticfiles/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+*.log
+logs/
+
+# ── Node / Frontend ─────────────────────────────────
+node_modules/
+frontend/dist/
+dist/
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage/
+
+# ── Backups & private material ──────────────────────
+backups/
+*.bak
+*.dump
+private/
+
+# ── Editors & OS ────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── AI tooling (local-only settings) ────────────────
+.claude/settings.local.json
