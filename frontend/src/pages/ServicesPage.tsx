@@ -13,10 +13,7 @@ export default function ServicesPage() {
   const secondary = services.filter((service) => service.tier === "secondary");
   return (
     <>
-      <Seo
-        title="Services"
-        description="Software development services — web development, web applications, backend and API development, mobile apps and custom business software — plus digital marketing and social media management."
-      />
+      <Seo title="Services" />
       <PageHeader label="Services" title="What I can build for you">
         Software development is the core of my work. Each project starts with a written scope, so
         you know exactly what is included before anything is built.

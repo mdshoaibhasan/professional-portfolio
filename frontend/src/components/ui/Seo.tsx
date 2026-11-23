@@ -3,21 +3,16 @@ import { displayName } from "@/lib/display";
 
 interface SeoProps {
   title?: string;
-  description: string;
 }
 
 /**
- * Per-page title and description, hoisted into <head> by React 19.
- * Canonical/Open Graph/JSON-LD are injected server-side by Django in Milestone 8 (D-006).
+ * Keeps the tab title current during in-app navigation (hoisted into <head> by React 19). Descriptions,
+ * canonical, Open Graph and JSON-LD are rendered by Django for each URL (backend/apps/seo, D-038), which is
+ * what crawlers read.
  */
-export function Seo({ title, description }: SeoProps) {
+export function Seo({ title }: SeoProps) {
   const { profile } = useSiteContent();
   const name = displayName(profile);
   const fullTitle = title ? `${title} — ${name}` : `${name} — ${profile.headline}`;
-  return (
-    <>
-      <title>{fullTitle}</title>
-      <meta name="description" content={description} />
-    </>
-  );
+  return <title>{fullTitle}</title>;
 }

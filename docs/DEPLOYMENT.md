@@ -56,6 +56,10 @@ never committed.
 3. Backup current database + media before upload.
 4. Upload code/build; `pip install -r requirements/prod.txt` (needs Pillow — compiled package, see Q7); `migrate`;
    `createcachetable` (first deploy only); `seed_content` (first deploy only); `collectstatic`.
+   Set `SITE_URL` to the real https address. The web server (or WhiteNoise, D-008) must serve the built frontend
+   files (`/assets/*`, `/og-default.png`, `/favicon.svg`) **before** requests reach Django. Django's catch-all
+   route would otherwise answer them with the HTML page. Django itself serves every page URL, `sitemap.xml` and
+   `robots.txt` (D-038).
 5. Restart the app; smoke test: home, case study, API endpoints, inquiry submit, admin login, 404 status, HTTPS redirect.
 6. Rollback plan: keep previous release directory + DB backup.
 

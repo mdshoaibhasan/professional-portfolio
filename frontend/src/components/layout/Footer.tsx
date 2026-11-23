@@ -1,10 +1,12 @@
 import { Link } from "react-router";
 import { useSiteContent } from "@/app/site-content";
 import { primaryNav } from "@/content/site";
+import { useConsent } from "@/features/consent/useConsent";
 import { displayName } from "@/lib/display";
 
 export function Footer() {
   const { profile, social_links: socials } = useSiteContent();
+  const consent = useConsent();
   const name = displayName(profile);
   const year = new Date().getFullYear();
   return (
@@ -61,6 +63,17 @@ export function Footer() {
                 Privacy policy
               </Link>
             </li>
+            {consent.enabled && (
+              <li>
+                <button
+                  type="button"
+                  className="text-fg-secondary hover:text-fg"
+                  onClick={consent.openSettings}
+                >
+                  Cookie settings
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       </div>

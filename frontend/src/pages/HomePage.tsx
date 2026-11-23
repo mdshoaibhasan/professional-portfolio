@@ -23,7 +23,7 @@ export default function HomePage() {
 
   return (
     <>
-      <Seo description="Software Engineer building practical software solutions: websites, web applications, backend systems and APIs. Available for freelance projects." />
+      <Seo />
 
       {/* Hero: identity + capabilities in the first viewport (D-012, hero card per D-032) */}
       <section aria-labelledby="hero-title" className="relative isolate overflow-hidden">

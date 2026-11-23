@@ -14,7 +14,7 @@ export default function ProjectDetailPage() {
 
   return (
     <>
-      <Seo title={`${project.title} case study`} description={project.summary} />
+      <Seo title={`${project.title} case study`} />
 
       <header className="relative isolate overflow-hidden border-b border-line py-section">
         <div aria-hidden="true" className="absolute inset-0 -z-10 hairline-grid" />

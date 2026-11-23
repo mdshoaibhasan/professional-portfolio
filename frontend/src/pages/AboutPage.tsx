@@ -10,10 +10,7 @@ export default function AboutPage() {
   const { profile } = useSiteContent();
   return (
     <>
-      <Seo
-        title="About"
-        description="Software Engineer and Computer Science and Engineering student in Bangladesh — background, skills and approach."
-      />
+      <Seo title="About" />
       <PageHeader label="About" title="About me">
         Software Engineer building websites, web applications, backend systems and APIs, with a
         background in team operations and customer-facing work.

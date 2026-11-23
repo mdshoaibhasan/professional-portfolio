@@ -192,3 +192,20 @@ personal data for little benefit at this volume. Revisit if the owner needs it.
 spam older than `INQUIRY_SPAM_RETENTION_DAYS`. Both are unset by default, and then it deletes nothing: the period is
 the owner's decision and must match the Privacy Policy (CONTENT_CHECKLIST §H). Scheduling is part of Milestone 10.
 Image uploads are capped at 2 MB and limited to JPG/PNG/WebP (`apps/uploads.py`). Django has no built-in per-file cap.
+
+### D-038 · 2026-11-23 · Accepted (owner, M8 approval 2026-11-23); implements D-006
+**Per-URL metadata is rendered by Django; descriptions live only on the server.** `apps/seo` serves the built
+`index.html` with title, description, canonical, Open Graph/Twitter and JSON-LD for each URL. Crawlers fetch every URL
+directly, so the React `<Seo>` component now only sets the tab title during in-app navigation, and removes the
+server's `<title>` at start-up so there is never a second one. JSON-LD uses only owner-supplied facts: no `Person`
+without a name, `knowsAbout` only "use"-tier skills, no email or phone. The default social image carries no name, so it
+can't go stale. *Requirement for M10:* the web server must serve `dist` files before requests reach Django.
+
+### D-039 · 2026-11-23 · Accepted (owner, M8 approval 2026-11-23)
+**Consent: opt-in, basic Consent Mode v2, banner only when something needs consent.** Categories are necessary,
+analytics (GA4) and marketing (Google Ads, Meta Pixel). Nothing is pre-ticked; accept and reject look the same; the
+banner doesn't block the page or trap focus. No Google or Meta script is requested before consent ("basic" mode, not
+"advanced" cookieless pings). The choice is stored in `localStorage` (`consent.v1`). Withdrawing consent reloads
+the page, because loaded scripts can't be unloaded. With no IDs configured (today) there is no banner and no
+third-party request at all. The only conversion is a parameterless lead event. Google Ads conversion labels are not
+supported until the owner has an Ads account.

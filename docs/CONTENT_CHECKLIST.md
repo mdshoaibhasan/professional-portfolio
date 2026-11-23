@@ -117,7 +117,9 @@ For each service:
 
 ## I. Domain, brand & marketing
 
-- [ ] **[R]** Domain name (owned? which registrar? or still to decide)
+- [ ] **[R]** Domain name (owned? which registrar? or still to decide). Becomes `SITE_URL`; canonical URLs, social previews and the sitemap depend on it.
+- [ ] **[O]** Analytics / ad account IDs, only if you want them: GA4 Measurement ID (`G-…`), Google Ads ID (`AW-…`), Meta Pixel ID. Each one adds a consent category and changes the Privacy Policy, so review it again after adding one. Google Ads *conversion* tracking also needs a conversion label (not built yet).
+- [ ] **[O]** Approve the social preview image `frontend/public/og-default.png` (no name on it by design)
 - [ ] **[O]** Preferred tone: formal / friendly-professional / bold
 - [ ] **[O]** Websites you admire (and what you like about them)
 - [ ] **[O]** Future ad plans (platforms, timing) — informs M8 consent setup only

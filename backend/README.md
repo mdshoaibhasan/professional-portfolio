@@ -75,6 +75,21 @@ Check a production configuration locally (needs those variables set in the shell
 - **Inquiries:** submitted data is read-only. Change the status on the detail page, or select several and use the
   *Mark selected as …* actions. Inquiries can't be added by hand.
 
+## Pages, SEO and sitemap
+
+Every URL that isn't the API, admin, static or media is a frontend page. Django serves the built
+`frontend/dist/index.html` (`FRONTEND_DIST_DIR`) with that page's title, description, canonical link, Open
+Graph/Twitter tags and JSON-LD added (`apps/seo`). That's what search engines and link previews read. Unknown,
+unpublished or inactive pages get a real 404 status. Run `npm run build` in `frontend/` first, otherwise pages
+return 503 with a reminder.
+
+- `/sitemap.xml` lists the public pages, published projects and active services; `/robots.txt` points to it.
+- All absolute URLs use `SITE_URL`. Production refuses to start unless it is a real `https://` address.
+- Page descriptions live in `apps/seo/pages.py`; projects and services use their `seo_title` / `seo_description`
+  from the admin, falling back to title and summary.
+- In development, keep using the Vite server on :5173 to browse the site. Django on :8000 doesn't serve the
+  built JS/CSS (production's web server does, D-008).
+
 ## API (`/api/v1/`, public)
 
 | Endpoint | Returns |

@@ -81,7 +81,7 @@ backend/
 │   ├── projects/      Project, ProjectSpec, CaseStudySection, CaseStudyPoint
 │   ├── services/      Service, ProcessStep
 │   └── inquiries/     Inquiry (+ notification service)   [Milestone 6]
-├── templates/         spa_shell.html (SEO meta injection)
+├── apps/seo/          SPA shell view (per-URL <head> tags), sitemap.xml, robots.txt (D-038)
 └── requirements/      base.txt, dev.txt, prod.txt
 ```
 
@@ -141,7 +141,7 @@ Responses are versioned and cacheable (`Cache-Control: public, max-age=60`). Lis
 
 Optional later (needs approval): Cloudflare Turnstile CAPTCHA (free) if spam gets through.
 
-## 5. SEO strategy *(decision in M3/M8, see D-006)*
+## 5. SEO strategy *(implemented in M8: D-006, D-038; consent: D-039)*
 
 Problem: a pure client-rendered SPA serves the same empty `index.html` for every URL. Social crawlers (Facebook,
 LinkedIn, WhatsApp, X) **do not run JavaScript**, so per-page Open Graph previews would be wrong.

@@ -9,10 +9,7 @@ export default function ExperiencePage() {
   const { profile } = useSiteContent();
   return (
     <>
-      <Seo
-        title="Experience"
-        description="Professional experience, education in Computer Science and Engineering, and certification in Python web application development."
-      />
+      <Seo title="Experience" />
       <PageHeader label="Experience" title="Experience & education">
         Operational experience, a Computer Science and Engineering degree, and a certification in
         Python web application development.

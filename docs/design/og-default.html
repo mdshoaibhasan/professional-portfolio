@@ -1,0 +1,69 @@
+<!doctype html>
+<!--
+  Source of frontend/public/og-default.png (1200×630 social preview, D-038).
+  Regenerate: render this file at exactly 1200×630 in a headless browser and save the screenshot over the PNG.
+  Fonts load from frontend/node_modules (run `npm install` in frontend/ first). No name on purpose: the image
+  must not go stale when profile content changes in the admin.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      @font-face {
+        font-family: "Space Grotesk";
+        src: url("../../frontend/node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2");
+        font-weight: 300 700;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("../../frontend/node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2");
+        font-weight: 100 800;
+      }
+      html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+      body {
+        position: relative;
+        background: #080d18;
+        color: #f8fafc;
+        font-family: "Space Grotesk", system-ui, sans-serif;
+      }
+      .grid {
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(to right, rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+        background-size: 100px 100px;
+        mask-image: radial-gradient(ellipse at 30% 40%, black 30%, transparent 75%);
+      }
+      .glow {
+        position: absolute; width: 720px; height: 520px; right: -160px; bottom: -220px;
+        background: radial-gradient(closest-side, rgba(37, 99, 235, 0.55), rgba(139, 92, 246, 0.35), transparent);
+        filter: blur(40px); opacity: 0.6;
+      }
+      .content { position: absolute; left: 96px; right: 96px; top: 110px; }
+      .label {
+        font-family: "JetBrains Mono", monospace; font-size: 22px; letter-spacing: 0.18em;
+        text-transform: uppercase; color: #a78bfa;
+      }
+      h1 { margin: 28px 0 0; font-size: 92px; line-height: 1.02; font-weight: 600; letter-spacing: -0.02em; }
+      h1 span { color: #60a5fa; }
+      .footer {
+        position: absolute; left: 96px; right: 96px; bottom: 72px;
+        display: flex; justify-content: space-between; align-items: center;
+        border-top: 1px solid #1f2a3d; padding-top: 28px;
+        font-family: "JetBrains Mono", monospace; font-size: 20px; color: #94a3b8;
+      }
+      .dot { color: #60a5fa; }
+    </style>
+  </head>
+  <body>
+    <div class="grid"></div>
+    <div class="glow"></div>
+    <div class="content">
+      <div class="label">Software Engineer</div>
+      <h1>Building <span>Practical</span><br />Software Solutions.</h1>
+    </div>
+    <div class="footer">
+      <span>Websites <span class="dot">·</span> Web apps <span class="dot">·</span> Backend <span class="dot">·</span> APIs</span>
+    </div>
+  </body>
+</html>

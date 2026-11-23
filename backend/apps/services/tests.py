@@ -42,6 +42,7 @@ class ProductionSettingsTests(SimpleTestCase):
         "DJANGO_SECRET_KEY": "x" * 30 + "-test-only-" + "y" * 30,
         "DJANGO_ALLOWED_HOSTS": "example.com",
         "DJANGO_ADMIN_PATH": "manage-7f3k",
+        "SITE_URL": "https://portfolio.example",
     }
 
     def run_check(self, **overrides):
@@ -58,6 +59,12 @@ class ProductionSettingsTests(SimpleTestCase):
     def test_safe_configuration_passes_deploy_checks(self):
         result = self.run_check()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_rejects_missing_or_non_https_site_url(self):
+        for value in ["", "http://portfolio.example", "https://localhost:8000"]:
+            result = self.run_check(SITE_URL=value)
+            self.assertNotEqual(result.returncode, 0, value)
+            self.assertIn("SITE_URL", result.stderr, value)
 
     def test_rejects_weak_secret_key(self):
         result = self.run_check(DJANGO_SECRET_KEY="change-me")

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "apps.projects",
     "apps.services",
     "apps.inquiries",
+    "apps.seo",
 ]
 
 MIDDLEWARE = [
@@ -104,6 +105,11 @@ MEDIA_ROOT = Path(env("MEDIA_ROOT", str(BASE_DIR / "media")))
 # Request-size limits for form data. These do NOT cap file size: images are limited in apps/uploads.py.
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
+
+# Public address of the site, used for canonical URLs, Open Graph tags and the sitemap (no trailing slash).
+SITE_URL = env("SITE_URL", "http://localhost:5173").rstrip("/")
+# Built frontend (npm run build). Django serves its index.html with per-URL <head> tags (apps/seo, D-006).
+FRONTEND_DIST_DIR = Path(env("FRONTEND_DIST_DIR", str(REPO_DIR / "frontend" / "dist")))
 
 # Admin lives at a non-default path (no leading/trailing slash in the env value).
 ADMIN_PATH = env("DJANGO_ADMIN_PATH", "admin").strip("/")

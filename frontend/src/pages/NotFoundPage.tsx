@@ -4,7 +4,7 @@ import { Seo } from "@/components/ui/Seo";
 export default function NotFoundPage() {
   return (
     <section className="container-page py-section">
-      <Seo title="Page not found" description="The page you are looking for does not exist." />
+      <Seo title="Page not found" />
       <meta name="robots" content="noindex" />
       <p className="label-mono text-accent-text">
         <span className="text-muted">404 / </span>Not found

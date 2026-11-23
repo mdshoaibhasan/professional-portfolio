@@ -3,7 +3,7 @@
 from django.core.exceptions import ImproperlyConfigured
 
 from .base import *  # noqa: F403
-from .base import ADMIN_PATH, ALLOWED_HOSTS, SECRET_KEY, env, env_bool
+from .base import ADMIN_PATH, ALLOWED_HOSTS, SECRET_KEY, SITE_URL, env, env_bool
 
 DEBUG = False
 
@@ -13,6 +13,10 @@ if not ALLOWED_HOSTS:
     raise ImproperlyConfigured("DJANGO_ALLOWED_HOSTS must list the production host name(s).")
 if ADMIN_PATH in {"", "admin"} or "change-me" in ADMIN_PATH:
     raise ImproperlyConfigured("DJANGO_ADMIN_PATH must be set to a non-default, hard-to-guess path.")
+if not SITE_URL.startswith("https://") or "localhost" in SITE_URL or "127.0.0.1" in SITE_URL:
+    raise ImproperlyConfigured(
+        "SITE_URL must be the public https:// address of the site (no trailing slash)."
+    )
 
 # Shared across WSGI worker processes without Redis (D-009). Run `manage.py createcachetable` once.
 CACHES = {

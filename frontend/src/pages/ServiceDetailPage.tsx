@@ -28,7 +28,7 @@ export default function ServiceDetailPage() {
 
   return (
     <>
-      <Seo title={service.title} description={service.description} />
+      <Seo title={service.title} />
       <PageHeader
         label={service.tier === "primary" ? "Service" : "Additional service"}
         title={service.title}

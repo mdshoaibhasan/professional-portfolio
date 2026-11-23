@@ -18,8 +18,8 @@ must be verified from source code. Positioning source of truth: [docs/POSITIONIN
 
 | Item | Status |
 |---|---|
-| Current milestone | **Milestone 7 — Admin & Content Management ✅ complete, approved 2026-11-23** |
-| Next milestone | Milestone 8 — SEO & Analytics (**not approved yet**) |
+| Current milestone | **Milestone 8 — SEO & Analytics ✅ complete, approved 2026-11-23** |
+| Next milestone | Milestone 9 — Quality Assurance (**not approved yet**) |
 | Positioning update | Software Engineer (D-029). D-030 to D-032 approved and **implemented 2026-11-23**; draft service copy awaits owner review (POSITIONING.md §7) |
 | Hosting | Unknown — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
 | BackgroundBridge source | Inspected read-only 2026-11-23 → [docs/BACKGROUNDBRIDGE_AUDIT.md](docs/BACKGROUNDBRIDGE_AUDIT.md). Pre-launch; never describe it as live. |

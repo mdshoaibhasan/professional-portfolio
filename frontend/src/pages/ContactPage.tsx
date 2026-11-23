@@ -22,10 +22,7 @@ export default function ContactPage() {
 
   return (
     <>
-      <Seo
-        title="Contact"
-        description="Start a project or ask a question about website, web application, API or mobile app development."
-      />
+      <Seo title="Contact" />
       <PageHeader label="Contact" title="Start a project">
         Tell me about what you want to build. I&rsquo;ll reply with questions, a suggested scope and
         next steps — no obligation.

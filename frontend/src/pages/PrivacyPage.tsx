@@ -4,11 +4,13 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Seo } from "@/components/ui/Seo";
 import { Fact, Todo } from "@/components/ui/Todo";
 import { useSiteContent } from "@/app/site-content";
+import { availableCategories, trackerConfig } from "@/features/consent/config";
+import { useConsent } from "@/features/consent/useConsent";
 
 /**
- * DRAFT privacy policy describing the site as designed (docs/ARCHITECTURE.md §4, §7).
- * Must be reviewed by the owner — and updated if analytics/ads are enabled in Milestone 8 —
- * before launch. Not legal advice.
+ * DRAFT privacy policy describing the site as designed (docs/ARCHITECTURE.md §4, §7). The cookie section
+ * follows the trackers actually configured (VITE_* IDs, D-039). Must be reviewed by the owner before launch.
+ * Not legal advice.
  */
 function Block({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -21,12 +23,12 @@ function Block({ title, children }: { title: string; children: ReactNode }) {
 
 export default function PrivacyPage() {
   const { profile } = useSiteContent();
+  const consent = useConsent();
+  const config = trackerConfig();
+  const available = availableCategories(config);
   return (
     <>
-      <Seo
-        title="Privacy policy"
-        description="How this website collects, uses and protects the information you send through it."
-      />
+      <Seo title="Privacy policy" />
       <PageHeader label="Legal" title="Privacy policy">
         <span className="text-sm">
           Last updated: <Todo>date of publication</Todo>
@@ -67,15 +69,59 @@ export default function PrivacyPage() {
             Inquiry details are used only to reply to you and discuss your project. You will not be
             added to a mailing list, and no promotional emails are sent.
           </p>
-          <p>Your information is not sold, and it is never shared with advertising platforms.</p>
+          <p>
+            Your information is not sold, and the contents of your inquiry are never shared with
+            analytics or advertising platforms.
+          </p>
         </Block>
 
         <Block title="Cookies and analytics">
-          <p>
-            The site currently uses no analytics or advertising cookies. If analytics are added in
-            future, they will only run after you give consent, and this policy will be updated
-            first.
-          </p>
+          {consent.enabled ? (
+            <>
+              <p>
+                Optional cookies are used only if you agree in the cookie banner. Nothing optional
+                loads before you choose, and you can change your choice at any time.
+              </p>
+              <ul className="list-disc space-y-2 pl-5">
+                {available.analytics && (
+                  <li>
+                    <strong className="text-fg">Analytics:</strong> Google Analytics, to understand
+                    which pages are visited and how people arrive at the site.
+                  </li>
+                )}
+                {config.adsId && (
+                  <li>
+                    <strong className="text-fg">Marketing:</strong> Google Ads, to measure whether
+                    advertising leads to visits.
+                  </li>
+                )}
+                {config.metaPixelId && (
+                  <li>
+                    <strong className="text-fg">Marketing:</strong> Meta Pixel (Facebook and
+                    Instagram), to measure whether advertising leads to visits.
+                  </li>
+                )}
+              </ul>
+              <p>
+                When you send an inquiry, consented platforms are told only that an inquiry was
+                sent. Your name, email and message are never included.
+              </p>
+              <p>
+                <button
+                  type="button"
+                  className="text-primary-text underline"
+                  onClick={consent.openSettings}
+                >
+                  Change cookie settings
+                </button>
+              </p>
+            </>
+          ) : (
+            <p>
+              The site uses no analytics or advertising cookies. If they are added in future, they
+              will only run after you give consent, and this policy will be updated first.
+            </p>
+          )}
         </Block>
 
         <Block title="How long it is kept">

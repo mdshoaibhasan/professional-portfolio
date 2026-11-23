@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useForm, type FieldError } from "react-hook-form";
 import { Link } from "react-router";
 import { buttonClasses } from "@/components/ui/button-styles";
+import { trackLead } from "@/features/consent/trackers";
 import { fetchFormToken, submitInquiry } from "@/features/contact/api";
 import {
   emptyInquiry,
@@ -130,6 +131,7 @@ export function ContactForm({ services, initialService, fallbackEmail }: Contact
     const result = await submitInquiry(values, tokenRef.current);
     switch (result.kind) {
       case "success":
+        trackLead();
         setSent(true);
         return;
       case "invalid": {

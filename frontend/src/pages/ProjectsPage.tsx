@@ -10,10 +10,7 @@ export default function ProjectsPage() {
   const projects = useLoaderData<typeof projectsLoader>();
   return (
     <>
-      <Seo
-        title="Projects"
-        description="Selected independent software projects and case studies."
-      />
+      <Seo title="Projects" />
       <PageHeader label="Projects" title="Selected work">
         Case studies written from the actual source code — what was built, how, and why.
       </PageHeader>

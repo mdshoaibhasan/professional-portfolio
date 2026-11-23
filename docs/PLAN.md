@@ -11,7 +11,7 @@ Status legend: ✅ done · 🟡 awaiting approval · ⏳ not started · ⛔ bloc
 | 5 | Django Backend | ✅ Approved 2026-11-23 | Host Python version (final pin) |
 | 6 | Contact System | ✅ Approved 2026-11-23 | SMTP details for real email (console backend until provided) |
 | 7 | Admin & Content Management | ✅ Approved 2026-11-23 | Retention period (owner decision) |
-| 8 | SEO & Analytics | ⏳ | Domain name; consent approach |
+| 8 | SEO & Analytics | ✅ Approved 2026-11-23 | Domain name, tracker IDs (owner) |
 | 9 | Quality Assurance | ⏳ | M4–M8 |
 | 10 | Deployment | ⏳ | Hosting details; explicit deploy approval |
 
@@ -134,7 +134,18 @@ admin page rendering), ruff, no missing migrations.
 - Inquiry admin: status workflow (new / contacted / closed / spam), read-only submitted data, CSV export (optional).
 - Admin hardened: non-default URL, strong passwords, login rate limiting (approach decided in M7).
 
-## Milestone 8 — SEO & Analytics
+## Milestone 8 — SEO & Analytics ✅
+
+Delivered 2026-11-23: new `apps/seo`. Django serves the built `index.html` for every page URL with its title,
+description, canonical, Open Graph/Twitter tags and JSON-LD (Person, WebSite, ProfilePage, CreativeWork, Service,
+only from facts the owner supplied). Real 404 status plus `noindex` for unknown, unpublished and inactive pages.
+`sitemap.xml`, `robots.txt` (admin path not revealed), 1200×630 `og-default.png` (source:
+`docs/design/og-default.html`). Production refuses a missing, non-https or localhost `SITE_URL`. Consent banner
+(necessary / analytics / marketing, nothing pre-ticked, equal accept/reject) and GA4 / Google Ads / Meta Pixel
+loaders under basic Consent Mode v2: nothing loads before consent, and with no IDs configured there is no banner.
+Lead event without form data. Privacy Policy cookie section follows the configured trackers. Found and fixed during
+testing: unescaped JSON-LD (XSS) and API 404s falling through to the HTML shell. Verified: 76 backend tests,
+32 frontend tests, build, live checks against Django and headless Edge (no third-party script before consent).
 
 - Per-route title/description/canonical/Open Graph/Twitter tags; JSON-LD (Person, ProfessionalService, CreativeWork for projects).
 - `sitemap.xml`, `robots.txt`, OG images.
