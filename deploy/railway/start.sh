@@ -3,6 +3,8 @@
 # Runs at every start, including waking from sleep: the volume is mounted only now (not during the build or
 # the pre-deploy step), and Railway Free has no cron. Every step is safe to repeat.
 set -eu
+# Railpack installs the Python dependencies into /app/.venv (RAILPACK_INSTALL_CMD, docs/DEPLOYMENT.md A3).
+if [ -f /app/.venv/bin/activate ]; then . /app/.venv/bin/activate; fi
 cd "$(dirname "$0")/../../backend"
 export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:-config.settings.prod}"
 
