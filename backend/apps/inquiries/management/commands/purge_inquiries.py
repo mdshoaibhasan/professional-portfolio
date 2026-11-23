@@ -1,7 +1,10 @@
 """Delete inquiries older than the retention period stated in the Privacy Policy.
 
-Retention is a decision for the site owner: until INQUIRY_RETENTION_DAYS / INQUIRY_SPAM_RETENTION_DAYS
-are set, this command deletes nothing. Intended to run daily from the host's scheduler (Milestone 10).
+Only inquiries marked *closed* (older than INQUIRY_RETENTION_DAYS) and spam (older than
+INQUIRY_SPAM_RETENTION_DAYS) are ever deleted. New and contacted inquiries are never deleted, however
+old: they are unanswered or may be an ongoing project (Privacy Policy: "unless they lead to an ongoing
+project"). Retention is the owner's decision: until the periods are set, this command deletes nothing.
+Runs at every start on Railway and daily from cron on cPanel (docs/DEPLOYMENT.md).
 """
 
 from datetime import timedelta
@@ -22,8 +25,8 @@ class Command(BaseCommand):
     def handle(self, *args, dry_run=False, **options):
         spam = Inquiry.objects.filter(status=Inquiry.Status.SPAM)
         self._purge(
-            "Inquiries",
-            Inquiry.objects.exclude(status=Inquiry.Status.SPAM),
+            "Closed inquiries",
+            Inquiry.objects.filter(status=Inquiry.Status.CLOSED),
             settings.INQUIRY_RETENTION_DAYS,
             "INQUIRY_RETENTION_DAYS",
             dry_run,

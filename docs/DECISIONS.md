@@ -38,7 +38,7 @@ prerendering — good if hosting is static-only.
 **Contract-first content layer.** Milestones 3–4 precede the backend, so the frontend uses typed local fixtures shaped
 exactly like the planned API responses; M5 swaps fixtures for API calls without page rewrites.
 
-### D-008 · 2026-11-23 · Open
+### D-008 · 2026-11-23 · Resolved by D-042 (WhiteNoise)
 **Static file serving in production** — host web server directly vs. WhiteNoise. Decided after hosting details (M10).
 
 ### D-009 · 2026-11-23 · Accepted (owner, 2026-11-23)
@@ -120,7 +120,7 @@ HSTS include-subdomains/preload stay off (their deploy-check warnings are silenc
 timestamp from `GET /inquiries/form-token/` (unreadable cross-site without CORS) proves same-origin and enables a
 minimum fill time (3 s) and a 24 h expiry. An invalid/expired token returns 400 and the form refreshes it automatically.
 
-### D-026 · 2026-11-23 · Accepted (owner, M6 approval 2026-11-23)
+### D-026 · 2026-11-23 · Superseded by D-044 (2026-11-23)
 **`REST_FRAMEWORK["NUM_PROXIES"] = 0` by default.** DRF's default trusts any `X-Forwarded-For` header, which would let
 bots bypass rate limits. Set `API_NUM_PROXIES` to the host's real proxy count in Milestone 10. Test-covered.
 
@@ -222,3 +222,44 @@ inline scripts or styles; `font-src data:` for the one font Vite inlines; `frame
 added only through `CSP_TRACKERS`, which must match the build-time `VITE_*` IDs. A mismatch fails safe (the tracker
 is blocked, never the site). The admin keeps Django's defaults without a CSP: its widgets aren't worth the breakage
 risk. Proven on a production-like setup: all pages and a real form submission, zero violations.
+
+### D-042 · 2026-11-23 · Accepted (owner, Railway plan approval 2026-11-23); resolves D-008
+**gunicorn and WhiteNoise in `requirements/prod.txt`.** Railway has no web server in front of Django: gunicorn runs
+it, and WhiteNoise serves the collected admin files and the built frontend (`WHITENOISE_ROOT = FRONTEND_DIST_DIR`;
+hashed files cached for a year; raw `/index.html` gets the CSP). Both are pure Python and work under Passenger on
+cPanel; gunicorn is simply unused there. `requirements/dev.txt` now includes `prod.txt`, so production settings can
+be checked locally.
+
+### D-043 · 2026-11-23 · Accepted (owner, Railway plan approval 2026-11-23)
+**Railway via Railpack and two scripts, with no Railway config file and no Docker.** `railway.json`/`railway.toml`
+stop being read on 2026-12-01, so build and start commands are dashboard settings pointing at
+`deploy/railway/build.sh` and `start.sh`; `railpack.json` only selects Python 3.12 and Node 22. Migrations run at
+start because the volume isn't mounted during build or pre-deploy. `start.sh` refuses to run unless
+`SQLITE_PATH`/`MEDIA_ROOT` are inside `RAILWAY_VOLUME_MOUNT_PATH` (no silent data loss), backs up before pending
+migrations, and runs 1 gunicorn worker with 4 threads (512 MB limit). SQLite is kept; cPanel uses
+`backend/passenger_wsgi.py`. *Fallback if Railpack can't install both runtimes:* a Railway-only Dockerfile, which
+needs owner approval.
+
+### D-044 · 2026-11-23 · Accepted (owner, Railway plan approval 2026-11-23); supersedes D-026
+**One trusted client-IP source: `CLIENT_IP_HEADER`.** DRF's `NUM_PROXIES` only reads `X-Forwarded-For`, which
+Railway doesn't document; Railway documents `X-Real-IP`. `config/client_ip.py` uses the connection address by
+default, or exactly one configured header, and rejects values that aren't valid IPs. It is used by the API
+throttles (`config/throttles.py`), the inquiry IP hash and the admin lockout. Configure it only for a proxy that
+overwrites the header; DEPLOYMENT.md A4 has the spoofing check to run before trusting it.
+
+### D-045 · 2026-11-23 · Accepted (owner, Railway plan approval 2026-11-23)
+**Demo deployments are noindex; uploads can be served by Django.** `SEO_ALLOW_INDEXING=False` adds
+`X-Robots-Tag: noindex, nofollow` to every response and a matching meta tag, and drops the sitemap line from
+robots.txt. Crawling stays allowed so crawlers can read the noindex. This hides the site from search results; it
+does not make it private. `SERVE_MEDIA=True` lets Django serve `MEDIA_ROOT` where no web server does (Railway).
+Both default to cPanel-friendly values.
+
+### D-046 · 2026-11-23 · Accepted (owner, Railway plan approval 2026-11-23)
+**Backups with SQLite's online-backup API (`apps/ops`: `backup_db`, `restore_db`).** A raw copy of a live SQLite
+file can be inconsistent. Snapshots are integrity-checked, pruned (pre-restore safety copies are never pruned), and
+restore refuses files that aren't intact Django databases, saves the current data first, then migrates. The same
+commands run from cron on cPanel. Transfer on Railway uses the documented `railway volume files` / `scp` commands,
+to be confirmed on the first deployment.
+Also: `purge_inquiries` now deletes only *closed* inquiries (and spam) past retention, never new or contacted ones.
+The previous version deleted any old non-spam inquiry, which contradicted the Privacy Policy's "unless they lead to
+an ongoing project". Found while preparing deployment, before any deletion had happened.

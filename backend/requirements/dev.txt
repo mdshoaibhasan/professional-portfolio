@@ -1,2 +1,3 @@
--r base.txt
+# Development: everything production uses (so prod settings can be checked locally), plus tooling.
+-r prod.txt
 ruff>=0.17,<0.18

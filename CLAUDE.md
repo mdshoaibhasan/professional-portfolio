@@ -19,9 +19,9 @@ must be verified from source code. Positioning source of truth: [docs/POSITIONIN
 | Item | Status |
 |---|---|
 | Current milestone | **Milestone 9 — Quality Assurance ✅ approved 2026-11-23** (content gate open: 20 placeholders, see docs/QA_REPORT.md) |
-| Next milestone | Milestone 10 — Deployment (**not approved yet**; blocked by hosting details and owner content) |
+| Next milestone | Milestone 10 — Deployment (**approved**; Railway Free demo prepared, not yet deployed; cPanel later) |
 | Positioning update | Software Engineer (D-029). D-030 to D-032 approved and **implemented 2026-11-23**; draft service copy awaits owner review (POSITIONING.md §7) |
-| Hosting | Unknown — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
+| Hosting | Stage 1 Railway Free (noindex demo), Stage 2 cPanel shared hosting — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Keep both working: no Railway-only code paths, SQLite only |
 | BackgroundBridge source | Inspected read-only 2026-11-23 → [docs/BACKGROUNDBRIDGE_AUDIT.md](docs/BACKGROUNDBRIDGE_AUDIT.md). Pre-launch; never describe it as live. |
 
 Update this table whenever a milestone changes state. Progress detail lives in [docs/PLAN.md](docs/PLAN.md).
@@ -113,7 +113,8 @@ Backend (run inside `backend/`, details in [backend/README.md](backend/README.md
 - `.venv/Scripts/python.exe manage.py runserver` — API on :8000 · `manage.py test` — test suite
 - `.venv/Scripts/ruff.exe check . && .venv/Scripts/ruff.exe format --check .` — lint/format (**must pass before any commit**)
 - `manage.py seed_content` — initial content (each item once: never overwrites admin edits or restores deleted content)
-- `manage.py purge_inquiries [--dry-run]` — delete inquiries past the retention period (no-op until configured)
+- `manage.py purge_inquiries [--dry-run]` — delete *closed* inquiries and spam past the retention period (no-op until configured)
+- `manage.py backup_db` / `manage.py restore_db <file> --yes` — consistent SQLite backup / restore (docs/DEPLOYMENT.md A5)
 
 ## 8. Local environment (observed 2026-11-23)
 

@@ -184,3 +184,52 @@ class SecurityHeaderTests(ShellTestCase):
             self.assertIn("camera=()", response["Permissions-Policy"], path)
             self.assertEqual(response["X-Content-Type-Options"], "nosniff", path)
         self.assertNotIn("Content-Security-Policy", self.client.get("/admin/login/"))
+
+
+class DemoNoIndexTests(ShellTestCase):
+    def test_indexing_allowed_by_default(self):
+        response = self.client.get("/about")
+        self.assertNotIn("X-Robots-Tag", response)
+        self.assertNotIn('content="noindex', head(response))
+        self.assertIn("Sitemap:", self.client.get("/robots.txt").content.decode())
+
+    @override_settings(SEO_ALLOW_INDEXING=False)
+    def test_demo_mode_says_noindex_everywhere_but_allows_crawling(self):
+        for path in ["/", "/about", "/api/v1/site/", "/robots.txt", "/sitemap.xml"]:
+            self.assertEqual(self.client.get(path)["X-Robots-Tag"], "noindex, nofollow", path)
+        html = head(self.client.get("/"))
+        self.assertEqual(html.count('name="robots"'), 1)
+        self.assertIn('<meta name="robots" content="noindex, nofollow" />', html)
+        robots = self.client.get("/robots.txt").content.decode()
+        self.assertNotIn("Sitemap:", robots)
+        self.assertNotIn("Disallow: /\n", robots)  # crawlers must be able to read the noindex
+
+
+class MediaServingTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.media = tempfile.TemporaryDirectory()
+        (Path(cls.media.name) / "profile").mkdir()
+        (Path(cls.media.name) / "profile" / "me.png").write_bytes(b"png-bytes")
+        (Path(cls.media.name).parent / "outside-media.txt").write_text("secret", encoding="utf-8")
+
+    @classmethod
+    def tearDownClass(cls):
+        (Path(cls.media.name).parent / "outside-media.txt").unlink(missing_ok=True)
+        cls.media.cleanup()
+        super().tearDownClass()
+
+    def test_off_by_default(self):
+        with override_settings(MEDIA_ROOT=self.media.name):
+            self.assertEqual(self.client.get("/media/profile/me.png").status_code, 404)
+
+    def test_served_when_enabled_without_leaving_media_root(self):
+        with override_settings(MEDIA_ROOT=self.media.name, SERVE_MEDIA=True):
+            response = self.client.get("/media/profile/me.png")
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(b"".join(response.streaming_content), b"png-bytes")
+            for attempt in ["/media/../outside-media.txt", "/media/%2e%2e/outside-media.txt"]:
+                refused = self.client.get(attempt)
+                self.assertIn(refused.status_code, (400, 404), attempt)  # 400: Django's traversal guard
+                self.assertNotIn(b"secret", refused.content, attempt)

@@ -60,6 +60,19 @@ class ProductionSettingsTests(SimpleTestCase):
         result = self.run_check()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_cpanel_passenger_entry_point_loads_the_app(self):
+        env = {**os.environ, **self.SAFE_ENV}
+        env.pop("DJANGO_SETTINGS_MODULE")  # Passenger doesn't set it; wsgi.py defaults to production
+        result = subprocess.run(
+            [sys.executable, "-c", "import passenger_wsgi; print(callable(passenger_wsgi.application))"],
+            cwd=BACKEND_DIR,
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        self.assertEqual(result.stdout.strip(), "True", result.stderr)
+
     def test_rejects_missing_or_non_https_site_url(self):
         for value in ["", "http://portfolio.example", "https://localhost:8000"]:
             result = self.run_check(SITE_URL=value)

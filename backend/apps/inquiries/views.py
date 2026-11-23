@@ -4,15 +4,16 @@ from django.db import transaction
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
+
+from config.client_ip import client_ip
+from config.throttles import InquiryThrottle
 
 from .models import Inquiry
 from .serializers import InquiryCreateSerializer
 from .services import (
     TokenStatus,
     check_form_token,
-    client_ip,
     consume_form_token,
     hash_ip,
     issue_form_token,
@@ -45,7 +46,7 @@ class InquiryCreateView(APIView):
     # No session auth: anonymous visitors only, and the signed form token replaces CSRF protection
     # (a cross-site page cannot read the token because the API sends no CORS headers).
     authentication_classes = []
-    throttle_classes = [ScopedRateThrottle]
+    throttle_classes = [InquiryThrottle]
     throttle_scope = "inquiries"
     http_method_names = ["post", "options"]
 

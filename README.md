@@ -28,7 +28,7 @@ selected projects, the services I offer, and a contact form that handles inquiri
 | Backend | Python, Django 5.2 LTS, Django REST Framework 3.18 |
 | Database | SQLite |
 | Testing | Django test runner (backend), Vitest + Testing Library (frontend), ruff, ESLint, Prettier |
-| Hosting | Not chosen yet: see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
+| Hosting | Railway Free (temporary noindex demo), then cPanel shared hosting (production): [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
 
 There's no Docker, Redis, Celery or paid service. Rate limiting uses Django's database cache, so the site can run on
 ordinary shared hosting.

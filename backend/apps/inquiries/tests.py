@@ -213,6 +213,20 @@ class InquiryApiTests(TestCase):
             ]
         self.assertEqual(codes, [201, 201, 429])
 
+    @override_settings(CLIENT_IP_HEADER="HTTP_X_REAL_IP")
+    def test_behind_a_proxy_each_visitor_gets_their_own_limit(self):
+        with mock.patch(
+            "rest_framework.throttling.ScopedRateThrottle.THROTTLE_RATES",
+            {"inquiries": "1/hour", "anon": "1000/minute"},
+        ):
+            proxy = {"REMOTE_ADDR": "10.0.0.1"}  # every request arrives from the proxy
+            first = self.post(valid_payload(), HTTP_X_REAL_IP="203.0.113.1", **proxy).status_code
+            second = self.post(valid_payload(), HTTP_X_REAL_IP="203.0.113.2", **proxy).status_code
+            repeat = self.post(valid_payload(), HTTP_X_REAL_IP="203.0.113.1", **proxy).status_code
+        self.assertEqual((first, second, repeat), (201, 201, 429))
+        hashes = set(Inquiry.objects.values_list("ip_hash", flat=True))
+        self.assertEqual(len(hashes), 2)  # hashed per visitor, not per proxy
+
     # ── Method & privacy hygiene ───────────────────────────────────────────
 
     def test_only_post_is_allowed(self):

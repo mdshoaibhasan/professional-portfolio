@@ -1,76 +1,312 @@
 # Deployment
 
-Status: **Hosting unknown — no deployment architecture is final.** Nothing is purchased or deployed without explicit approval.
+| Stage | Host | Purpose | Status |
+|---|---|---|---|
+| 1 | **Railway Free** | Temporary public demo, $0 | Repo prepared 2026-11-23; **not deployed yet** (Part A) |
+| 2 | **cPanel shared hosting** | Final production on a custom domain | Host not chosen; Part B |
 
-## 1. Hosting questionnaire (owner to answer)
+The same code runs on both. Everything host-specific is an environment variable, apart from two small files: the
+Railway scripts in `deploy/railway/` (ignored by cPanel) and `backend/passenger_wsgi.py` (ignored by Railway).
+The database stays **SQLite** on both (D-043).
 
-| # | Question | Answer |
+Nothing is purchased, upgraded, or changed in DNS without the owner's explicit approval.
+
+---
+
+## Part A: Railway Free (demo)
+
+### A1. What Railway Free gives and costs
+
+Checked in Railway's official docs on 2026-11-23. Prices and limits can change, so recheck before relying on them.
+
+| Topic | Fact | Effect on this site |
 |---|---|---|
-| 1 | Hosting provider (company name) | |
-| 2 | Plan name/tier (shared, VPS, cloud, free tier?) | |
-| 3 | Control panel (cPanel, DirectAdmin, Plesk, hPanel, none) | |
-| 4 | Python app support? (cPanel "Setup Python App" / Passenger / other) | |
-| 5 | Available Python versions (list all) | |
-| 6 | SSH access? (yes/no; jailed?) | |
-| 7 | Can you run `pip install` (and are compiled packages like Pillow allowed)? | |
-| 8 | Node.js available on server? (not required — we build locally) | |
-| 9 | Static file hosting / document root control? | |
-| 10 | Disk space & inode limits; RAM/CPU (entry processes) limits | |
-| 11 | Free SSL (Let's Encrypt / AutoSSL)? | |
-| 12 | Email hosting/SMTP included? (for inquiry notifications) | |
-| 13 | Cron jobs available? (for backups/cleanup) | |
-| 14 | Domain status: owned? registrar? DNS managed where? | |
-| 15 | Can the API live on the same domain (e.g., `example.com/api/`) or must it be a subdomain? | |
-| 16 | Backups provided by host? Frequency/retention? | |
-| 17 | SMTP details for inquiry notifications (host mailbox or other), and the address that should receive them | |
-| 18 | Is there a reverse proxy/CDN (e.g. Cloudflare) in front of the site? (sets `API_NUM_PROXIES`) | |
+| Cost | $0/month with **$1 of usage credit**; no card | When the $1 is used up, **the site stops until the next month** (volume data is kept) |
+| Usage prices | RAM $10/GB-month, CPU $20/vCPU-month, volume $0.15/GB-month, billed per minute while awake | $1 ≈ 100 MB of RAM running all month |
+| Limits | 0.5 GB RAM, 1 vCPU, 1 replica per service; 1 project, 3 services | One service, one gunicorn worker (`deploy/railway/start.sh`) |
+| Sleep | Sleeps after 5–10 minutes with no outbound traffic; wakes on the next request | First visitor after a quiet spell waits for a cold start; **that request may get a 502** |
+| Volume | One volume, max 0.5 GB; mounted **only while the app runs** (not during build or pre-deploy) | Database, uploads and backups live on it; migrations run at start |
+| Redeploys | A service with a volume has a short downtime on every redeploy | Expected |
+| Email | **Outbound SMTP is blocked** on Free (Pro and above only) | Inquiry emails aren't sent; inquiries are saved and read in the admin (A7) |
+| Domain | `*.up.railway.app` only; **no custom domains** | Demo address only |
+| Cron | Not available on Free | Retention clean-up runs at each start instead |
+| HTTPS | Terminated by Railway; sends `X-Forwarded-Proto: https` and `X-Real-IP` | `DJANGO_BEHIND_TLS_PROXY=True`, `CLIENT_IP_HEADER=X-Real-IP` (A4) |
+| Logs | Kept 3 days | |
+| Config files | `railway.json`/`railway.toml` are deprecated and **stop being read on 2026-12-01** | Not used; settings are entered in the dashboard (A3) |
 
-Tip: in cPanel, check **Software → Setup Python App** for available versions.
+**Assumptions to confirm during the first deployment:**
+- Memory: one worker is expected to use about 120–150 MB, i.e. roughly 15 awake hours a day within $1. Check
+  **Project → Usage** after the first week.
+- The build: Railpack installing both Node and Python from `railpack.json` isn't documented for this exact layout.
+- Railway's proxy *overwrites* `X-Real-IP` (verified in A4 step 5 before trusting it).
+- Whether volume backups (A5) and `railway ssh` work on Free, and whether ssh works while the service sleeps.
 
-## 2. Preferred architecture (if the host supports it)
+### A2. What's in the repository for Railway
 
-- Frontend built locally → upload `frontend/dist/` as static files.
-- Django via the host's Python app environment (WSGI/Passenger), same domain.
-- Routes: `/api/v1/*`, admin, sitemap/robots and the SPA shell served by Django; hashed assets served statically.
-- SQLite file stored **outside** the public document root; media in a dedicated directory.
-
-## 3. Compatibility matrix (to evaluate once answers arrive)
-
-| Host capability | Approach |
+| File | Role |
 |---|---|
-| cPanel + Python App (≥ 3.10) + SSH | ✅ Preferred architecture as above |
-| cPanel + Python App, no SSH | Workable: upload via File Manager/Git Version Control; run `migrate`/`collectstatic` via the Python App UI "Run script"/terminal if available |
-| Python < 3.10 only | ⚠️ Django 5.2 incompatible; ask host for newer Python, or choose another host / option below |
-| Static hosting only (no Python) | Alternative: frontend on static host; backend on a free-tier Python host (separate subdomain, CORS) — or prerender the site and use a form-handling service (requires approval) |
-| VPS | ✅ Full control: Nginx + Gunicorn + systemd (no Docker unless approved) |
+| `railpack.json` | Railpack: Python 3.12 + Node 22 |
+| `requirements.txt` (root) | One line, `-r backend/requirements/prod.txt`, so the builder detects Python |
+| `deploy/railway/build.sh` | Build: `npm ci` + `npm run build` (frontend), `collectstatic` |
+| `deploy/railway/start.sh` | Every start: refuse to run unless the database and media paths are inside the volume → back up if migrations are pending → `migrate` → `createcachetable` → `seed_content` → `purge_inquiries` → gunicorn (1 worker, 4 threads) on `$PORT` |
 
-## 4. Environment variables
+`seed_content` creates each item at most once and never restores deleted content (D-033). `purge_inquiries` only
+deletes *closed* inquiries and spam older than the retention periods, and does nothing until those are set (D-037).
 
-See `/.env.example`. Production values are set in the host's environment panel or a `.env` file outside the web root —
-never committed.
+### A3. One-time setup (owner, in the Railway dashboard)
 
-## 5. Release checklist (draft, finalised in M10)
+These steps need your account; I can't do them for you. Menu names may differ slightly; tell me if one isn't where
+described.
 
-0. Release gate in [QA_REPORT.md](QA_REPORT.md) §6 passes (incl. `npm run qa -- --release`: zero placeholders).
-1. `npm run build` (frontend) — verify output.
-2. Backend tests pass; `python manage.py check --deploy` clean with prod settings.
-3. Backup current database + media before upload.
-4. Upload code/build; `pip install -r requirements/prod.txt` (needs Pillow — compiled package, see Q7); `migrate`;
-   `createcachetable` (first deploy only); `seed_content` (first deploy only); `collectstatic`.
-   Set `SITE_URL` to the real https address. The web server (or WhiteNoise, D-008) must serve the built frontend
-   files (`/assets/*`, `/og-default.png`, `/favicon.svg`) **before** requests reach Django. Django's catch-all
-   route would otherwise answer them with the HTML page. Django itself serves every page URL, `sitemap.xml` and
-   `robots.txt` (D-038).
-5. Restart the app; smoke test: home, case study, API endpoints, inquiry submit, admin login, 404 status, HTTPS redirect.
-6. Rollback plan: keep previous release directory + DB backup.
+1. **Sign in** at railway.com with GitHub (Free plan, no card). **New Project → Deploy from GitHub repo →**
+   `mdshoaibhasan/professional-portfolio`. A first build may start and fail before the steps below are done. That's
+   fine.
+2. **Domain:** service → **Settings → Networking → Generate Domain**. Note the address, e.g.
+   `https://portfolio-production-ab12.up.railway.app`. It's needed in step 5.
+3. **Volume:** attach a volume to the service with mount path **`/data`**.
+4. **Settings:**
+   - Build → Custom Build Command: `sh deploy/railway/build.sh`
+   - Deploy → Custom Start Command: `sh deploy/railway/start.sh`
+   - Deploy → Healthcheck Path: `/robots.txt`
+   - Replicas: 1 (volumes don't allow more). Leave Serverless (sleep) **on**: it's what keeps usage under $1.
+5. **Variables** (service → Variables → Raw Editor). Replace `<domain>` with the host from step 2, without `https://`:
+   ```
+   DJANGO_SETTINGS_MODULE=config.settings.prod
+   DJANGO_SECRET_KEY=<64+ random characters: python -c "import secrets; print(secrets.token_urlsafe(64))">
+   DJANGO_ADMIN_PATH=<hard-to-guess path, e.g. manage-7f3k9q>
+   DJANGO_ALLOWED_HOSTS=<domain>,healthcheck.railway.app
+   DJANGO_CSRF_TRUSTED_ORIGINS=https://<domain>
+   SITE_URL=https://<domain>
+   DJANGO_BEHIND_TLS_PROXY=True
+   CLIENT_IP_HEADER=X-Real-IP
+   SQLITE_PATH=/data/db.sqlite3
+   MEDIA_ROOT=/data/media
+   SERVE_MEDIA=True
+   SEO_ALLOW_INDEXING=False
+   ```
+   Leave `INQUIRY_NOTIFY_EMAIL` and all `EMAIL_*` **unset**: SMTP is blocked, and an unset address makes the app skip
+   sending instead of waiting for a blocked connection. Never commit or share these values.
+6. **Deploy** (or Redeploy). Build logs should show `npm run build` and `collectstatic`. Deploy logs should show
+   the migrations, `seed_content`, and gunicorn listening on the port.
+7. **Admin account:** install the Railway CLI (`npm install -g @railway/cli`), then `railway login`, `railway link`
+   (choose the project), and:
+   ```
+   railway ssh
+   cd backend && python manage.py createsuperuser
+   ```
+   The admin is at `https://<domain>/<DJANGO_ADMIN_PATH>/`.
 
-## 6. Backup strategy (draft)
+### A4. Verification after the first deploy
 
-- Daily SQLite backup via cron using SQLite's online backup (not a raw file copy while writing), retained 14 days.
-- Media directory backup weekly; off-server copy (owner's machine or free cloud storage) monthly.
-- Restore procedure documented and tested once before launch.
+Deployment counts as successful only after these pass against the real URL. I can run 1–4 and 6 once you send me
+the address.
 
-## 7. Email
+1. Every page returns 200, unknown pages return 404, and `http://` redirects to `https://`.
+2. Headers on a page: `Content-Security-Policy`, `Permissions-Policy`, `X-Robots-Tag: noindex, nofollow`,
+   `Strict-Transport-Security`.
+3. `/robots.txt` has no `Sitemap:` line, and pages carry `<meta name="robots" content="noindex, nofollow">`.
+4. `npm run qa -- --base https://<domain>` passes (placeholders are reported, not failed).
+5. **Client-IP check (security, before trusting `X-Real-IP`).** The inquiry limit is 5 per hour per visitor, and
+   every attempt counts, even rejected ones. From your own connection, send six *empty* inquiry requests, each with
+   a different fake `X-Real-IP`. Empty requests are rejected (400) and store nothing:
+   ```
+   for i in 1 2 3 4 5 6; do curl -s -o /dev/null -w "%{http_code}\n" -X POST https://<domain>/api/v1/inquiries/ \
+     -H "Content-Type: application/json" -H "X-Real-IP: 203.0.113.$i" -d "{}"; done
+   ```
+   - **Expected:** `400` five times, then **`429`**. Railway replaced the fake header with your real IP, so all six
+     counted against you. The header is safe to trust.
+   - **If all six are `400`:** the fake header got through. **Remove `CLIENT_IP_HEADER` immediately** and tell me;
+     the site then falls back to the proxy address (shared limits, but no spoofing).
+   - Side effect: your own IP can't send an inquiry for the next hour.
+6. **Persistence:** send a real test inquiry, redeploy, and confirm it's still in the admin. Then delete it.
+7. **Admin lockout per visitor:** five wrong passwords lock *your* IP for 15 minutes, not everyone's.
 
-- Inquiry notifications via host SMTP (or an existing mailbox) — credentials in env only.
-- SPF/DKIM/DMARC records configured for the domain to avoid spam-foldering.
+### A5. Backups and restore
+
+**Making a backup.** `backup_db` takes a consistent snapshot with SQLite's online-backup API, safe while the site
+is running. A raw copy of the live file can be corrupt. It keeps the newest 3 (`--keep N` to change).
+`start.sh` also takes one automatically before applying new migrations (keeps 5).
+```
+railway ssh -- sh -c "cd backend && python manage.py backup_db"
+# → Backup written: /data/backups/db-20261201-093000.sqlite3 (… KB)
+```
+
+**Downloading it.** The volume is mounted at `/data`, so `/data/backups/x` is `/backups/x` inside the volume.
+```
+railway volume files download /backups/db-20261201-093000.sqlite3 ./db-20261201-093000.sqlite3
+```
+Railway's docs also describe `scp` and `sftp` against `ssh.railway.com` (username = the service domain):
+```
+scp <domain>@ssh.railway.com:/data/backups/db-20261201-093000.sqlite3 .
+```
+Don't use `railway ssh -- cat file > local`: binary-safe output isn't documented, and it can produce a broken copy.
+
+**Restoring.** `restore_db` checks the file is an intact Django SQLite database, saves the current data as
+`pre-restore-*.sqlite3` first, restores, then applies migrations:
+```
+railway volume files upload ./db-20261201-093000.sqlite3 /backups/restore.sqlite3
+railway ssh -- sh -c "cd backend && python manage.py restore_db /data/backups/restore.sqlite3 --yes"
+```
+
+**Uploaded images** (`/data/media`): download the folder with `scp -r <domain>@ssh.railway.com:/data/media ./media`.
+
+**Railway's own volume backups** (service → Backups: manual, or daily kept 6 days). The docs don't say whether
+Free includes them; if the tab is available, enable the daily schedule as an extra layer.
+
+**Status of these commands:**
+- Tested locally: `backup_db` and `restore_db`, on a real copy of the database (backup → delete → restore →
+  migrations), plus 6 automated tests.
+- From Railway's docs, not yet run against the service: the `railway` and `scp` commands. I'll run them with you on
+  the first deployment and update this section with the exact results. Until then, treat them as unverified.
+- Not documented: whether ssh and file transfer wake a sleeping service. Open the site first to wake it.
+
+**Routine:** before every deploy, run a backup and download it. Keep at least one copy off Railway.
+
+### A6. Rollback
+
+- **Code:** in the service's Deployments list, redeploy the previous successful deployment. The volume (data) is
+  untouched by a code rollback.
+- **Data:** restore the automatic pre-migration backup or your latest download (A5).
+- Migrations are additive in this project, so going back one release with the same database normally works. If a
+  release added a migration, restore the pre-migration backup together with the code rollback.
+
+### A7. Inquiries without email (Railway Free)
+
+Inquiries are saved first and are never lost because of email (save-then-notify). Each one shows
+"Notification email not configured" in the admin. Check **Admin → Inquiries** regularly. Email works normally on
+cPanel (Part B). Sending through an HTTPS email API such as Resend (free tier) is possible, but needs your account
+and approval.
+
+### A8. Demo caveats
+
+- `noindex` keeps the demo out of search results. **It does not make the site private**: anyone with the link can
+  open it.
+- **All 20 content placeholders must be completed before the production launch** (release gate,
+  [QA_REPORT.md](QA_REPORT.md) §6). The demo shows them as visible TODO boxes.
+- If the monthly credit runs out, the site is offline until the next billing cycle.
+
+---
+
+## Part B: cPanel shared hosting (production)
+
+### B1. Confirm with the hosting provider before buying
+
+| # | Requirement | Why |
+|---|---|---|
+| 1 | **"Setup Python App"** (CloudLinux) with **Python 3.12** | Django 5.2 needs Python 3.10+; the code is tested on 3.12 (Railway) and 3.14 (local) |
+| 2 | **Phusion Passenger** runs the Python app (WSGI) | Entry point `backend/passenger_wsgi.py` |
+| 3 | **SSH or the cPanel Terminal** | Running `pip`, `migrate`, `createsuperuser`, backups |
+| 4 | `pip install` allowed, with compiled wheels (**Pillow**) | Image uploads |
+| 5 | **SQLite 3.31 or newer** on the server | Django 5.2's minimum |
+| 6 | Writable folders **outside `public_html`**, kept across restarts | Database, uploads and backups must not be web-downloadable |
+| 7 | **Cron jobs** | Daily backup and retention clean-up |
+| 8 | **SMTP mailbox** on the domain, SPF/DKIM | Inquiry notifications |
+| 9 | Free SSL (AutoSSL / Let's Encrypt) | HTTPS is required (production refuses `http://` `SITE_URL`) |
+| 10 | A file outside `public_html` that only your account can read (`~/portfolio/.env`, permissions 600) | Holds the secrets for the app, the Terminal and cron alike |
+| 11 | Limits: disk, inodes, RAM, entry processes | Several hundred files; small RAM footprint |
+| 12 | Is Cloudflare or another proxy in front? | Decides `CLIENT_IP_HEADER` and `DJANGO_BEHIND_TLS_PROXY` |
+
+### B2. Layout on the server
+
+```
+~/portfolio/                 code: backend/ and frontend/dist/ (no node_modules, no .venv, no db)
+~/portfolio/.env             secrets and settings (chmod 600), read by Django at start-up
+~/portfolio_data/db.sqlite3  database (outside public_html)
+~/portfolio_data/media/      uploads
+~/portfolio_data/backups/    backup_db snapshots
+```
+
+### B3. First deployment
+
+1. **On your computer:** `cd frontend && npm ci && npm run build`. Upload the repository **without**
+   `frontend/node_modules`, `backend/.venv`, `backend/db.sqlite3` or `.env`, but **with** `frontend/dist/`.
+2. **cPanel → Setup Python App → Create:** Python **3.12**; application root `portfolio/backend`; application URL:
+   your domain; startup file `passenger_wsgi.py`; entry point `application`.
+3. **Settings file** `~/portfolio/.env` (create it with File Manager or the Terminal, then
+   `chmod 600 ~/portfolio/.env`). Use this file rather than the Python App screen's variables: those reach only
+   the running app, not the Terminal or cron, which would then silently use development settings.
+   ```
+   DJANGO_SECRET_KEY=<new 64+ random characters, not Railway's>
+   DJANGO_ADMIN_PATH=<hard-to-guess path>
+   DJANGO_ALLOWED_HOSTS=example.com,www.example.com
+   DJANGO_CSRF_TRUSTED_ORIGINS=https://example.com,https://www.example.com
+   SITE_URL=https://example.com
+   SQLITE_PATH=/home/<user>/portfolio_data/db.sqlite3
+   MEDIA_ROOT=/home/<user>/portfolio_data/media
+   SERVE_MEDIA=True                 # simplest; or symlink media into public_html and leave this off
+   SEO_ALLOW_INDEXING=True          # only once all placeholders are filled
+   INQUIRY_NOTIFY_EMAIL=<where inquiries go>
+   EMAIL_HOST=<mail.example.com>  EMAIL_PORT=587  EMAIL_HOST_USER=…  EMAIL_HOST_PASSWORD=…  DEFAULT_FROM_EMAIL=…
+   # Only behind Cloudflare: CLIENT_IP_HEADER=CF-Connecting-IP and DJANGO_BEHIND_TLS_PROXY=True
+   ```
+   With no proxy, leave `CLIENT_IP_HEADER` empty: Apache passes the visitor's real address directly.
+   The only variable that can't live in `.env` is `DJANGO_SETTINGS_MODULE`, because the file is read after it's
+   used. Passenger needs nothing (`wsgi.py` defaults to production); shell commands export it, as below.
+4. **Terminal** (cPanel shows the exact `source …/activate` line for the app):
+   ```
+   source /home/<user>/virtualenv/portfolio/backend/3.12/bin/activate
+   export DJANGO_SETTINGS_MODULE=config.settings.prod   # manage.py would otherwise use development settings
+   cd ~/portfolio/backend
+   pip install -r requirements/prod.txt
+   python manage.py check --deploy
+   python manage.py migrate
+   python manage.py createcachetable
+   python manage.py collectstatic --noinput
+   python manage.py seed_content
+   python manage.py createsuperuser
+   ```
+5. **Restart** the app in Setup Python App. WhiteNoise serves `/assets/*`, `/static/*`, the preview image and the
+   favicon from Django, so no Apache configuration is needed.
+6. **Cron** (cPanel → Cron Jobs), daily:
+   ```
+   cd ~/portfolio/backend && DJANGO_SETTINGS_MODULE=config.settings.prod /home/<user>/virtualenv/portfolio/backend/3.12/bin/python manage.py backup_db --keep 14
+   cd ~/portfolio/backend && DJANGO_SETTINGS_MODULE=config.settings.prod /home/<user>/virtualenv/portfolio/backend/3.12/bin/python manage.py purge_inquiries
+   ```
+   Copy the backups off the server regularly (cPanel File Manager → download).
+7. **Verify:** the same checks as A4, against the real domain, and `npm run qa -- --release` with zero
+   placeholders. For the client-IP check (A4 step 5) without a proxy, *all six* requests count against your
+   connection address, so the sixth is `429` whatever the header says.
+
+### B4. Moving the data from Railway
+
+1. On Railway: `backup_db`, then download the file and the media folder (A5).
+2. Upload them to `~/portfolio_data/` (rename the backup to `db.sqlite3`) and `~/portfolio_data/media/`.
+3. Run `python manage.py migrate` and restart the app.
+4. Create a **new** `DJANGO_SECRET_KEY` for cPanel. Existing admin sessions end; passwords are unaffected.
+
+### B5. Updates and rollback
+
+- **Release:** `backup_db` → upload the new code into a new folder (keep the previous one) → point Setup Python
+  App's application root at it → `pip install`, `migrate`, `collectstatic` → restart.
+- **Rollback:** point the application root back at the previous folder and restart. If the release migrated the
+  database, `restore_db <backup> --yes` from the pre-release backup.
+
+---
+
+## Reference
+
+### Environment variables by host
+
+| Variable | Railway demo | cPanel production |
+|---|---|---|
+| `DJANGO_SETTINGS_MODULE` | `config.settings.prod` (service variable) | Passenger: not needed (`wsgi.py` defaults to prod); Terminal and cron: export it (B3) |
+| `SITE_URL` | `https://<app>.up.railway.app` | `https://<your domain>` |
+| `DJANGO_ALLOWED_HOSTS` | `<domain>,healthcheck.railway.app` | your domain(s) |
+| `DJANGO_BEHIND_TLS_PROXY` | `True` | `False` (`True` only behind Cloudflare) |
+| `CLIENT_IP_HEADER` | `X-Real-IP` (after the A4 check) | empty (Cloudflare: `CF-Connecting-IP`) |
+| `SQLITE_PATH` / `MEDIA_ROOT` | `/data/...` (volume) | outside `public_html` |
+| `SERVE_MEDIA` | `True` | `True`, or off with a `public_html` symlink |
+| `SEO_ALLOW_INDEXING` | `False` | `True` once placeholders are done |
+| `INQUIRY_NOTIFY_EMAIL`, `EMAIL_*` | unset (SMTP blocked) | set |
+| `CSP_TRACKERS`, `VITE_*` IDs | unset | only if analytics are approved |
+
+Full list with comments: [`/.env.example`](../.env.example).
+
+### Release checklist (both hosts)
+
+0. Release gate in [QA_REPORT.md](QA_REPORT.md) §6. For the Railway demo, placeholders are accepted (owner
+   decision, 2026-11-23); for production, zero.
+1. Backend: tests, ruff, `makemigrations --check`. Frontend: `npm run check` and `npm run build`.
+2. **Back up the database** and download the copy.
+3. Deploy (Part A or B).
+4. Verify (A4).

@@ -15,6 +15,8 @@ from django.core.cache import cache
 from django.dispatch import receiver
 from django.http import HttpResponse
 
+from config.client_ip import client_ip
+
 LOCKED_OUT_MESSAGE = (
     "<!doctype html><title>Too many attempts</title>"
     "<p>Too many failed sign-in attempts. Please wait {minutes} minutes and try again.</p>"
@@ -22,9 +24,8 @@ LOCKED_OUT_MESSAGE = (
 
 
 def _failure_key(request) -> str:
-    # REMOTE_ADDR only, consistent with the API throttles (NUM_PROXIES, D-026). Hashed: no raw IP cached.
-    ip = request.META.get("REMOTE_ADDR", "")
-    return "admin-login-failures:" + hashlib.sha256(ip.encode()).hexdigest()
+    # Same visitor identity as the API throttles (config/client_ip.py). Hashed: no raw IP cached.
+    return "admin-login-failures:" + hashlib.sha256(client_ip(request).encode()).hexdigest()
 
 
 def is_locked_out(request) -> bool:

@@ -3,7 +3,16 @@
 from django.core.exceptions import ImproperlyConfigured
 
 from .base import *  # noqa: F403
-from .base import ADMIN_PATH, ALLOWED_HOSTS, SECRET_KEY, SITE_URL, env, env_bool
+from .base import (
+    ADMIN_PATH,
+    ALLOWED_HOSTS,
+    FRONTEND_DIST_DIR,
+    MIDDLEWARE,
+    SECRET_KEY,
+    SITE_URL,
+    env,
+    env_bool,
+)
 
 DEBUG = False
 
@@ -25,6 +34,31 @@ CACHES = {
         "LOCATION": "django_cache",
     }
 }
+
+# Static files without a separate web server (D-042): WhiteNoise serves the collected admin files under
+# /static/ and the built frontend (/assets/*, /og-default.png, /favicon.svg) from FRONTEND_DIST_DIR. It sits
+# after the header middleware so its responses carry the same security and noindex headers. Works the same
+# under Passenger on cPanel, where Apache may serve these directories directly instead.
+_after = MIDDLEWARE.index("apps.seo.middleware.NoIndexMiddleware") + 1
+MIDDLEWARE = [*MIDDLEWARE[:_after], "whitenoise.middleware.WhiteNoiseMiddleware", *MIDDLEWARE[_after:]]
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
+WHITENOISE_ROOT = FRONTEND_DIST_DIR
+# Hashed names (Vite "index-DsWATRBU.js", Django "base.1a2b3c4d5e6f.css") never change: cache them for a year.
+WHITENOISE_IMMUTABLE_FILE_TEST = r"^.+[.-][0-9a-zA-Z_-]{8,12}\.\w+$"
+
+
+def _whitenoise_headers(headers, path, url):
+    # dist/index.html is also reachable raw at /index.html; give it the same CSP as the rendered pages.
+    if url.endswith(".html"):
+        from config.security_headers import content_security_policy
+
+        headers["Content-Security-Policy"] = content_security_policy()
+
+
+WHITENOISE_ADD_HEADERS_FUNCTION = _whitenoise_headers
 
 # HTTPS. The host's proxy may terminate TLS; trust its header only when told to.
 SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", True)

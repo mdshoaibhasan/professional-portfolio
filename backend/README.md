@@ -34,7 +34,9 @@ only ever talks to one origin.
 | `.venv/Scripts/ruff.exe check . && .venv/Scripts/ruff.exe format --check .` | Lint and formatting check (**must pass before any commit**) |
 | `.venv/Scripts/python.exe manage.py makemigrations --check --dry-run` | Confirm no model change is missing a migration |
 | `.venv/Scripts/python.exe manage.py seed_content` | Load initial content from `apps/profiles/seed/content.json` (details below) |
-| `.venv/Scripts/python.exe manage.py purge_inquiries --dry-run` | Show which inquiries are past the retention period; drop `--dry-run` to delete them. Does nothing until `INQUIRY_RETENTION_DAYS` / `INQUIRY_SPAM_RETENTION_DAYS` are set |
+| `.venv/Scripts/python.exe manage.py purge_inquiries --dry-run` | Show which inquiries are past the retention period; drop `--dry-run` to delete them. Only *closed* inquiries and spam are ever deleted (never new or contacted ones), and nothing until `INQUIRY_RETENTION_DAYS` / `INQUIRY_SPAM_RETENTION_DAYS` are set |
+| `.venv/Scripts/python.exe manage.py backup_db [--keep 3]` | Consistent snapshot of the SQLite database into `BACKUP_DIR` (default: `backups/` next to the database), safe while the site runs |
+| `.venv/Scripts/python.exe manage.py restore_db <file> --yes` | Replace the database with a backup; saves the current data as `pre-restore-*.sqlite3` first, then migrates |
 
 **`seed_content`** creates each item (the profile, each list, each service/project slug) at most once, tracked
 in `SeedRecord`. Admin edits are never overwritten and deleted content never comes back. New items added to the
@@ -57,7 +59,8 @@ and a non-default `DJANGO_ADMIN_PATH`. It turns on HTTPS redirects, secure cooki
 |---|---|
 | `manage.py createcachetable` (once, on first deploy) | Rate limiting and used-token tracking live in a database cache table. **Without it, every public endpoint returns a 500 error.** |
 | `manage.py migrate`, `collectstatic`, `seed_content` (first deploy) | Schema, admin static files, initial content |
-| `API_NUM_PROXIES` | Number of reverse proxies in front of Django (default `0`). If the host has a proxy and this stays `0`, all visitors share one rate-limit bucket: **5 inquiries per hour for the whole site**. If it is set higher than the real number, visitors can bypass limits with a fake `X-Forwarded-For` header. |
+| `CLIENT_IP_HEADER` | Header carrying the visitor's IP behind a proxy (Railway: `X-Real-IP`; Cloudflare: `CF-Connecting-IP`; default empty = connection address). Behind a proxy without it, all visitors share one rate-limit bucket: **5 inquiries per hour for the whole site**. Set it **only** for a header the proxy overwrites, or visitors can fake it and bypass limits (check in DEPLOYMENT.md A4). Used by the API limits, inquiry IP hashes and the admin lockout (D-044). |
+| `SEO_ALLOW_INDEXING`, `SERVE_MEDIA`, `BACKUP_DIR` | Demo noindex, Django-served uploads, backup folder: see [DEPLOYMENT.md](../docs/DEPLOYMENT.md) |
 | `INQUIRY_NOTIFY_EMAIL` + `EMAIL_*` | Not enforced at start-up. If unset, inquiries are still saved, but no email is sent and each one records "Notification email not configured". |
 | `INQUIRY_RETENTION_DAYS`, `INQUIRY_SPAM_RETENTION_DAYS` | Retention period from the Privacy Policy. Schedule `purge_inquiries` daily on the host (Milestone 10) |
 | `DJANGO_BEHIND_TLS_PROXY` | Set to `True` only if the host terminates HTTPS in a proxy and sends `X-Forwarded-Proto` |
@@ -112,7 +115,7 @@ return 503 with a reminder.
 | All public endpoints, per IP | 120 requests / minute | `API_ANON_RATE` |
 | `POST inquiries/`, per IP | 5 / hour, **counting every attempt**, including rejected ones (a visitor with several validation errors can be locked out for up to an hour) | `INQUIRY_RATE_LIMIT` |
 
-Visitors are identified by their connection address (`API_NUM_PROXIES`, above). The raw IP is never stored; each
+Visitors are identified by their connection address, or `CLIENT_IP_HEADER` behind a proxy (above). The raw IP is never stored; each
 inquiry keeps a keyed hash. Submissions caught by the hidden honeypot field, or sent sooner than
 `INQUIRY_MIN_SUBMIT_SECONDS` (3 s) after the token was issued, get the normal success response but are stored with
 status *spam* and no email. They can be recovered in the admin. An invalid, expired or reused token returns 400 with

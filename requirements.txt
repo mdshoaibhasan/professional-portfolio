@@ -1,0 +1,3 @@
+# Lets Railway's builder detect the Python app at the repository root (D-043). The real list lives in
+# backend/requirements/; on cPanel install backend/requirements/prod.txt directly.
+-r backend/requirements/prod.txt

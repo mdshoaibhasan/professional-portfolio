@@ -39,7 +39,9 @@ def render_head(meta: PageMeta) -> str:
         f'<meta property="og:image" content="{escape(meta.image_url)}" />',
         '<meta name="twitter:card" content="summary_large_image" />',
     ]
-    if meta.status == 404:
+    if not settings.SEO_ALLOW_INDEXING:
+        tags.append('<meta name="robots" content="noindex, nofollow" />')
+    elif meta.status == 404:
         tags.append('<meta name="robots" content="noindex" />')
     tags += [f'<script type="application/ld+json">{_json_ld(item)}</script>' for item in meta.json_ld]
     return "\n    ".join(tags)
@@ -92,5 +94,8 @@ def sitemap(request):
 @require_safe
 def robots(request):
     # The admin path is deliberately not listed: robots.txt is public and would reveal it.
-    body = f"User-agent: *\nDisallow: /api/\n\nSitemap: {absolute('/sitemap.xml')}\n"
+    body = "User-agent: *\nDisallow: /api/\n"
+    # Demo deployments: crawling stays allowed so crawlers see the noindex header; no sitemap is advertised.
+    if settings.SEO_ALLOW_INDEXING:
+        body += f"\nSitemap: {absolute('/sitemap.xml')}\n"
     return HttpResponse(body, content_type="text/plain; charset=utf-8")

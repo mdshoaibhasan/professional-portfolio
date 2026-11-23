@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 from io import StringIO
+from unittest import mock
 
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -143,7 +144,7 @@ class InquiryAdminActionTests(TestCase):
 class PurgeInquiriesTests(TestCase):
     def setUp(self):
         old = timezone.now() - timedelta(days=400)
-        for status in ["new", "spam"]:
+        for status in ["closed", "spam"]:
             for age in [old, timezone.now()]:
                 inquiry = Inquiry.objects.create(name="X", email="x@example.com", message="m", status=status)
                 Inquiry.objects.filter(pk=inquiry.pk).update(created_at=age)
@@ -164,6 +165,16 @@ class PurgeInquiriesTests(TestCase):
         self.assertEqual(Inquiry.objects.count(), 2)
         self.assertFalse(Inquiry.objects.filter(created_at__lt=timezone.now() - timedelta(days=1)).exists())
 
+    @override_settings(INQUIRY_RETENTION_DAYS=1, INQUIRY_SPAM_RETENTION_DAYS=1)
+    def test_new_and_contacted_inquiries_are_never_deleted(self):
+        old = timezone.now() - timedelta(days=4000)
+        for status in ["new", "contacted"]:
+            inquiry = Inquiry.objects.create(name="Keep", email="k@example.com", message="m", status=status)
+            Inquiry.objects.filter(pk=inquiry.pk).update(created_at=old)
+        self.purge()
+        kept = Inquiry.objects.filter(name="Keep").values_list("status", flat=True)
+        self.assertEqual(sorted(kept), ["contacted", "new"])
+
     @override_settings(INQUIRY_RETENTION_DAYS=365, INQUIRY_SPAM_RETENTION_DAYS=None)
     def test_spam_kept_when_its_period_is_unset(self):
         self.purge()
@@ -174,3 +185,59 @@ class PurgeInquiriesTests(TestCase):
         output = self.purge("--dry-run")
         self.assertEqual(Inquiry.objects.count(), 4)
         self.assertIn("would be deleted", output)
+
+
+class ClientIpTests(TestCase):
+    """Which address identifies a visitor (config/client_ip.py, D-044)."""
+
+    def ip(self, **meta):
+        from config.client_ip import client_ip
+
+        return client_ip(RequestFactory().get("/", **meta))
+
+    def test_headers_are_ignored_unless_configured(self):
+        with override_settings(CLIENT_IP_HEADER=""):
+            self.assertEqual(
+                self.ip(REMOTE_ADDR="10.0.0.1", HTTP_X_REAL_IP="1.2.3.4", HTTP_X_FORWARDED_FOR="5.6.7.8"),
+                "10.0.0.1",
+            )
+
+    @override_settings(CLIENT_IP_HEADER="HTTP_X_REAL_IP")
+    def test_configured_header_is_used_and_others_ignored(self):
+        self.assertEqual(
+            self.ip(REMOTE_ADDR="10.0.0.1", HTTP_X_REAL_IP="203.0.113.9", HTTP_X_FORWARDED_FOR="5.6.7.8"),
+            "203.0.113.9",
+        )
+        self.assertEqual(self.ip(REMOTE_ADDR="10.0.0.1", HTTP_X_REAL_IP="2001:db8::1"), "2001:db8::1")
+
+    @override_settings(CLIENT_IP_HEADER="HTTP_X_REAL_IP")
+    def test_missing_or_malformed_header_falls_back_to_the_connection(self):
+        for value in ["", "not-an-ip", "1.2.3.4; DROP TABLE", "999.1.1.1"]:
+            self.assertEqual(self.ip(REMOTE_ADDR="10.0.0.1", HTTP_X_REAL_IP=value), "10.0.0.1", value)
+
+    def test_setting_accepts_header_or_meta_names(self):
+        import importlib
+
+        import config.settings.base as base
+
+        for raw in ["X-Real-IP", "x-real-ip", "HTTP_X_REAL_IP"]:
+            with mock.patch.dict("os.environ", {"CLIENT_IP_HEADER": raw}):
+                self.assertEqual(importlib.reload(base).CLIENT_IP_HEADER, "HTTP_X_REAL_IP", raw)
+        importlib.reload(base)
+
+    @override_settings(CLIENT_IP_HEADER="HTTP_X_REAL_IP", ADMIN_LOGIN_MAX_FAILURES=2)
+    def test_admin_lockout_follows_the_configured_header(self):
+        cache.clear()
+        make_superuser()
+        url = reverse("admin:login")
+        for _ in range(2):
+            self.client.post(url, {"username": "owner", "password": "x"}, HTTP_X_REAL_IP="203.0.113.50")
+        locked = self.client.post(
+            url, {"username": "owner", "password": PASSWORD}, HTTP_X_REAL_IP="203.0.113.50"
+        )
+        self.assertEqual(locked.status_code, 429)
+        # Same proxy connection, different real visitor: not locked out.
+        other = self.client.post(
+            url, {"username": "owner", "password": PASSWORD}, HTTP_X_REAL_IP="198.51.100.7"
+        )
+        self.assertEqual(other.status_code, 302)

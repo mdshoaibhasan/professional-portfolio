@@ -44,11 +44,13 @@ INSTALLED_APPS = [
     "apps.services",
     "apps.inquiries",
     "apps.seo",
+    "apps.ops",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "config.security_headers.PermissionsPolicyMiddleware",
+    "apps.seo.middleware.NoIndexMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -101,6 +103,8 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
+# Where `manage.py backup_db` writes snapshots; empty = a "backups" folder next to the database (D-046).
+BACKUP_DIR = env("BACKUP_DIR")
 MEDIA_ROOT = Path(env("MEDIA_ROOT", str(BASE_DIR / "media")))
 
 # Request-size limits for form data. These do NOT cap file size: images are limited in apps/uploads.py.
@@ -109,6 +113,10 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
 
 # Public address of the site, used for canonical URLs, Open Graph tags and the sitemap (no trailing slash).
 SITE_URL = env("SITE_URL", "http://localhost:5173").rstrip("/")
+# False for demo deployments: every response says noindex (apps/seo/middleware.py, D-045).
+SEO_ALLOW_INDEXING = env_bool("SEO_ALLOW_INDEXING", True)
+# Let Django serve uploaded images when no web server does (Railway). cPanel: leave off, Apache serves media/.
+SERVE_MEDIA = env_bool("SERVE_MEDIA", False)
 # Built frontend (npm run build). Django serves its index.html with per-URL <head> tags (apps/seo, D-006).
 FRONTEND_DIST_DIR = Path(env("FRONTEND_DIST_DIR", str(REPO_DIR / "frontend" / "dist")))
 
@@ -124,15 +132,19 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.SessionAuthentication"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
-    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.AnonRateThrottle"],
+    "DEFAULT_THROTTLE_CLASSES": ["config.throttles.AnonThrottle"],
     "DEFAULT_THROTTLE_RATES": {
         "anon": env("API_ANON_RATE", "120/minute"),
         "inquiries": env("INQUIRY_RATE_LIMIT", "5/hour"),
     },
-    # Identify clients by REMOTE_ADDR. DRF's default (None) trusts any X-Forwarded-For header,
-    # which lets a bot bypass rate limits by sending a fake one. Set to the real proxy count in M10.
-    "NUM_PROXIES": int(env("API_NUM_PROXIES", "0")),
 }
+
+# Request header holding the visitor's IP behind a reverse proxy, e.g. "X-Real-IP" on Railway; empty = use the
+# connection address. Only for a proxy that overwrites the header itself (config/client_ip.py, D-044).
+_ip_header = env("CLIENT_IP_HEADER").upper().replace("-", "_")
+if _ip_header and not _ip_header.startswith("HTTP_"):
+    _ip_header = f"HTTP_{_ip_header}"
+CLIENT_IP_HEADER = _ip_header
 
 # Contact form (apps/inquiries)
 INQUIRY_NOTIFY_EMAIL = env("INQUIRY_NOTIFY_EMAIL")

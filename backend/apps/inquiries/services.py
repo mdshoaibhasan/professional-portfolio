@@ -60,11 +60,6 @@ def consume_form_token(token: str) -> bool:
 # ── Client data ────────────────────────────────────────────────────────────
 
 
-def client_ip(request) -> str:
-    # REMOTE_ADDR only. Trusting X-Forwarded-For is configured per host in Milestone 10.
-    return request.META.get("REMOTE_ADDR", "")
-
-
 def hash_ip(ip: str) -> str:
     return salted_hmac("inquiries.ip", ip, algorithm="sha256").hexdigest() if ip else ""
 

@@ -1,1 +1,6 @@
+# Production extras (D-042). Both are pure Python, free, and work on Railway and cPanel alike.
 -r base.txt
+# WSGI server for Railway (cPanel runs the app through Passenger instead; installing it there is harmless).
+gunicorn>=27.0,<28
+# Serves the built frontend files and admin static files from Django when no web server does (Railway).
+whitenoise>=6.12,<7

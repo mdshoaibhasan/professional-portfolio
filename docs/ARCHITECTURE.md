@@ -130,7 +130,7 @@ Responses are versioned and cacheable (`Cache-Control: public, max-age=60`). Lis
 2. Client validates (Zod) → `POST /api/v1/inquiries/` with the token. The token replaces CSRF protection: a cross-site
    page cannot read it because the API sends no CORS headers, and there is no session to ride (D-025).
 3. Server: rate limit (`ScopedRateThrottle`, scope `inquiries`, 5/hour per IP; DB cache in production; client = REMOTE_ADDR,
-   `X-Forwarded-For` ignored unless `API_NUM_PROXIES` is set — D-026) → serializer validation → token check
+   behind a proxy only the header named by `CLIENT_IP_HEADER`, never `X-Forwarded-For` — D-044) → serializer validation → token check
    (invalid/expired → 400; younger than `INQUIRY_MIN_SUBMIT_SECONDS` → spam) → honeypot (filled → spam).
 4. **Save to DB** in a transaction. IP stored only as a keyed hash.
 5. Real inquiries: email the owner (`Reply-To` = inquirer). On failure: `notify_error` recorded, error type logged

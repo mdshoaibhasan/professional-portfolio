@@ -13,7 +13,7 @@ Status legend: ✅ done · 🟡 awaiting approval · ⏳ not started · ⛔ bloc
 | 7 | Admin & Content Management | ✅ Approved 2026-11-23 | Retention period (owner decision) |
 | 8 | SEO & Analytics | ✅ Approved 2026-11-23 | Domain name, tracker IDs (owner) |
 | 9 | Quality Assurance | ✅ Approved 2026-11-23 (content gate still open: release check fails until placeholders are filled) | Owner content (20 placeholders) |
-| 10 | Deployment | ⏳ | Hosting details; explicit deploy approval |
+| 10 | Deployment | 🟡 In progress (approved): Railway Free demo prepared, awaiting owner's dashboard setup | Owner: Railway account + variables (DEPLOYMENT A3); later cPanel host |
 
 Each milestone ends with: verification → doc updates → report → **approval gate** → Git checkpoint commit (with approval).
 
@@ -167,7 +167,17 @@ Safari/iOS, Android and screen-reader checks are listed for the owner (QA_REPORT
 - Security checks (headers, CSRF, throttling, admin, dependency audit), API tests.
 - Content audit: zero `TODO(content)` remaining.
 
-## Milestone 10 — Deployment
+## Milestone 10 — Deployment 🟡
+
+Owner decision 2026-11-23: Stage 1 **Railway Free** (temporary noindex demo, placeholders accepted for the demo
+only), Stage 2 **cPanel shared hosting** (production). Prepared 2026-11-23, **not yet deployed**:
+- gunicorn + WhiteNoise (D-042); `railpack.json`, root `requirements.txt`, `deploy/railway/build.sh` and
+  `start.sh` (volume guard, pre-migration backup, 1 worker) (D-043); `backend/passenger_wsgi.py` for cPanel.
+- Trusted client-IP header replacing `API_NUM_PROXIES` (D-044); demo noindex and optional media serving (D-045);
+  `backup_db` / `restore_db` (D-046); `purge_inquiries` limited to closed inquiries and spam.
+- [DEPLOYMENT.md](DEPLOYMENT.md) rewritten: Part A Railway, Part B cPanel.
+- Remaining: owner creates the Railway service (A3); verification against the real URL (A4), including the
+  `X-Real-IP` spoofing check and the first real backup download (A5).
 
 - Host-specific production config, static/media serving, HTTPS, domain/DNS, email (SPF/DKIM).
 - Deployment runbook, rollback, and backup strategy (SQLite + media).
