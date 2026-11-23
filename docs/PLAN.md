@@ -12,7 +12,7 @@ Status legend: ✅ done · 🟡 awaiting approval · ⏳ not started · ⛔ bloc
 | 6 | Contact System | ✅ Approved 2026-11-23 | SMTP details for real email (console backend until provided) |
 | 7 | Admin & Content Management | ✅ Approved 2026-11-23 | Retention period (owner decision) |
 | 8 | SEO & Analytics | ✅ Approved 2026-11-23 | Domain name, tracker IDs (owner) |
-| 9 | Quality Assurance | ⏳ | M4–M8 |
+| 9 | Quality Assurance | ✅ Approved 2026-11-23 (content gate still open: release check fails until placeholders are filled) | Owner content (20 placeholders) |
 | 10 | Deployment | ⏳ | Hosting details; explicit deploy approval |
 
 Each milestone ends with: verification → doc updates → report → **approval gate** → Git checkpoint commit (with approval).
@@ -152,7 +152,14 @@ testing: unescaped JSON-LD (XSS) and API 404s falling through to the HTML shell.
 - Consent banner (necessary vs analytics vs marketing); GA4 / Meta Pixel / Google Ads loaded only after consent,
   using Google Consent Mode v2 defaults = denied. No form PII ever sent to these platforms.
 
-## Milestone 9 — Quality Assurance
+## Milestone 9 — Quality Assurance ✅
+
+Delivered 2026-11-23, full results in [QA_REPORT.md](QA_REPORT.md). `npm run qa` browser QA (axe WCAG 2.2 AA, errors,
+headings, overflow, alt, names, keyboard) over all 30 page views: 0 failures in Edge and Chrome, also on a
+production-like setup. `npm run qa:perf`: LCP ≤ 2.3 s, initial JS 112 KB gzip. Content-Security-Policy and
+Permissions-Policy added (D-041). One accessibility fix (links in text underlined). npm audit and pip-audit clean;
+79 backend tests, 32 frontend tests. **Not passed:** zero placeholders (20 remain, owner content). Firefox,
+Safari/iOS, Android and screen-reader checks are listed for the owner (QA_REPORT §7).
 
 - Responsive & cross-browser (Chrome, Firefox, Safari/WebKit, Edge, Android Chrome).
 - Accessibility (axe + manual keyboard + screen reader spot check).

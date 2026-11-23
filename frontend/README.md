@@ -9,14 +9,18 @@ Node.js ≥ 22.22 (required by React Router 8). The production host does **not**
 
 ## Commands
 
-| Command           | What it does                                                            |
-| ----------------- | ----------------------------------------------------------------------- |
-| `npm install`     | Install dependencies                                                    |
-| `npm run dev`     | Dev server on http://localhost:5173 (`/api` proxied to Django on :8000) |
-| `npm run build`   | Type-check, then production build to `dist/`                            |
-| `npm run preview` | Serve the production build locally                                      |
-| `npm run check`   | Type-check + ESLint + Prettier check (run before every commit)          |
-| `npm run format`  | Format all files with Prettier                                          |
+| Command           | What it does                                                                                             |
+| ----------------- | -------------------------------------------------------------------------------------------------------- |
+| `npm install`     | Install dependencies                                                                                     |
+| `npm run dev`     | Dev server on http://localhost:5173 (`/api` proxied to Django on :8000)                                  |
+| `npm run build`   | Type-check, then production build to `dist/`                                                             |
+| `npm run preview` | Serve the production build locally                                                                       |
+| `npm run check`   | Type-check + ESLint + Prettier check + tests (run before every commit)                                   |
+| `npm run format`  | Format all files with Prettier                                                                           |
+| `npm run qa`      | Browser QA of every page in Edge (`-- --browser chrome`, `-- --release`); needs the site and API running |
+| `npm run qa:perf` | LCP and initial-JS budgets on the production build (`npm run preview` first)                             |
+
+QA details, results and the release gate: [../docs/QA_REPORT.md](../docs/QA_REPORT.md).
 
 ## Structure
 

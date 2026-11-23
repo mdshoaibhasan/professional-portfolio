@@ -87,6 +87,9 @@ return 503 with a reminder.
 - All absolute URLs use `SITE_URL`. Production refuses to start unless it is a real `https://` address.
 - Page descriptions live in `apps/seo/pages.py`; projects and services use their `seo_title` / `seo_description`
   from the admin, falling back to title and summary.
+- Pages carry a strict Content-Security-Policy (no inline scripts or styles); every response carries a
+  Permissions-Policy (`config/security_headers.py`). If analytics are enabled, set `CSP_TRACKERS` (`google`,
+  `meta`) to match the frontend's tracker IDs.
 - In development, keep using the Vite server on :5173 to browse the site. Django on :8000 doesn't serve the
   built JS/CSS (production's web server does, D-008).
 

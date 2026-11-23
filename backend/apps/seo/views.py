@@ -10,6 +10,7 @@ from django.views.decorators.http import require_safe
 
 from apps.projects.models import Project
 from apps.services.models import Service
+from config.security_headers import content_security_policy
 
 from .pages import STATIC_PAGES, PageMeta, absolute, resolve
 
@@ -63,6 +64,7 @@ def spa_shell(request, path: str = ""):
     response = HttpResponse(html, status=meta.status)
     # Short cache: content edited in the admin should reach crawlers quickly.
     response["Cache-Control"] = "public, max-age=60"
+    response["Content-Security-Policy"] = content_security_policy()
     return response
 
 

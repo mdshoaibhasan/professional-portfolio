@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "config.security_headers.PermissionsPolicyMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -149,6 +150,9 @@ EMAIL_TIMEOUT = 10  # seconds; a slow mail server must not hang the request
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
+# Trackers the pages' Content-Security-Policy allows: "google", "meta" (config/security_headers.py).
+# Must match the VITE_* tracker IDs the frontend was built with; otherwise the browser blocks those scripts.
+CSP_TRACKERS = [t for t in env_list("CSP_TRACKERS") if t in {"google", "meta"}]
 X_FRAME_OPTIONS = "DENY"
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"

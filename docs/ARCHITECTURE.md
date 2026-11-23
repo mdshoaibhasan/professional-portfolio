@@ -163,7 +163,7 @@ everything else (shell view with 404 status). Hashed `/assets/*` served directly
 
 - Secrets only in environment; `.env` never committed; `DEBUG=False` in prod.
 - `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` strict; `SECURE_SSL_REDIRECT`, secure + HttpOnly cookies, HSTS (after HTTPS verified).
-- Security headers: CSP (self-hosted assets make a strict CSP feasible; analytics domains added only when consented scripts exist),
+- Security headers *(implemented M9, D-041)*: CSP on pages (self-hosted assets make a strict CSP feasible; tracker hosts only via `CSP_TRACKERS`),
   `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options: DENY`.
 - Public API read-only; inquiry endpoint throttled, size-limited, validated. Admin on non-default path.
 - Uploaded images: type/size validation; never user-uploaded from public site.

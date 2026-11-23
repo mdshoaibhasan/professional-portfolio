@@ -51,6 +51,7 @@ never committed.
 
 ## 5. Release checklist (draft, finalised in M10)
 
+0. Release gate in [QA_REPORT.md](QA_REPORT.md) §6 passes (incl. `npm run qa -- --release`: zero placeholders).
 1. `npm run build` (frontend) — verify output.
 2. Backend tests pass; `python manage.py check --deploy` clean with prod settings.
 3. Backup current database + media before upload.

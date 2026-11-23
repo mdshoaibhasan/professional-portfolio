@@ -209,3 +209,16 @@ banner doesn't block the page or trap focus. No Google or Meta script is request
 the page, because loaded scripts can't be unloaded. With no IDs configured (today) there is no banner and no
 third-party request at all. The only conversion is a parameterless lead event. Google Ads conversion labels are not
 supported until the owner has an Ads account.
+
+### D-040 · 2026-11-23 · Accepted (owner, M9 approval 2026-11-23)
+**QA tooling: `axe-core` as the only new (dev-only) dependency.** The plan names axe for accessibility. It runs inside
+`frontend/scripts/qa.mjs`, which drives the installed Chrome/Edge over the DevTools Protocol with Node built-ins.
+No Playwright, Puppeteer or Lighthouse: the budgets (LCP, initial JS gzip) are measured directly. `pip-audit` ran
+from a throwaway virtualenv and is not a project dependency. Nothing here ships to visitors.
+
+### D-041 · 2026-11-23 · Accepted (owner, M9 approval 2026-11-23)
+**Content-Security-Policy on public pages, Permissions-Policy everywhere.** Pages: everything from this origin; no
+inline scripts or styles; `font-src data:` for the one font Vite inlines; `frame-ancestors 'none'`. Tracker hosts are
+added only through `CSP_TRACKERS`, which must match the build-time `VITE_*` IDs. A mismatch fails safe (the tracker
+is blocked, never the site). The admin keeps Django's defaults without a CSP: its widgets aren't worth the breakage
+risk. Proven on a production-like setup: all pages and a real form submission, zero violations.

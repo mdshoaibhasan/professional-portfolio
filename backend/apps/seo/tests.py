@@ -160,3 +160,27 @@ class SitemapRobotsTests(ShellTestCase):
         self.assertIn(f"Sitemap: {SITE}/sitemap.xml", body)
         self.assertIn("Disallow: /api/", body)
         self.assertNotIn("admin", body)
+
+
+class SecurityHeaderTests(ShellTestCase):
+    def test_pages_get_a_strict_content_security_policy(self):
+        csp = self.client.get("/about")["Content-Security-Policy"]
+        self.assertIn("script-src 'self';", csp)
+        self.assertIn("frame-ancestors 'none'", csp)
+        self.assertIn("object-src 'none'", csp)
+        self.assertNotIn("unsafe-inline", csp)
+        self.assertNotIn("unsafe-eval", csp)
+        self.assertNotIn("googletagmanager", csp)
+
+    def test_tracker_hosts_only_when_configured(self):
+        with override_settings(CSP_TRACKERS=["google"]):
+            csp = self.client.get("/")["Content-Security-Policy"]
+        self.assertIn("https://www.googletagmanager.com", csp)
+        self.assertNotIn("facebook", csp)
+
+    def test_permissions_policy_everywhere_but_csp_only_on_pages(self):
+        for path in ["/", "/api/v1/site/", "/robots.txt", "/admin/login/"]:
+            response = self.client.get(path)
+            self.assertIn("camera=()", response["Permissions-Policy"], path)
+            self.assertEqual(response["X-Content-Type-Options"], "nosniff", path)
+        self.assertNotIn("Content-Security-Policy", self.client.get("/admin/login/"))
