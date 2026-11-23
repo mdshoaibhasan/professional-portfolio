@@ -1,6 +1,7 @@
 from django.db import models
 
 from apps.profiles.models import LINES_HELP, Ordered
+from apps.uploads import IMAGE_HELP, IMAGE_VALIDATORS
 
 
 class Project(Ordered):
@@ -21,7 +22,9 @@ class Project(Ordered):
     repo_url = models.URLField(blank=True)
     live_url = models.URLField(blank=True)
     highlights = models.TextField(blank=True, help_text=LINES_HELP)
-    cover_image = models.ImageField(upload_to="projects/", blank=True)
+    cover_image = models.ImageField(
+        upload_to="projects/", blank=True, validators=IMAGE_VALIDATORS, help_text=IMAGE_HELP
+    )
     seo_title = models.CharField(max_length=70, blank=True)
     seo_description = models.CharField(max_length=160, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

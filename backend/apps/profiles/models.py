@@ -1,6 +1,8 @@
 from django.core.validators import RegexValidator
 from django.db import models
 
+from apps.uploads import IMAGE_HELP, IMAGE_VALIDATORS
+
 LINES_HELP = "One item per line."
 
 
@@ -29,7 +31,9 @@ class Profile(models.Model):
         validators=[RegexValidator(r"^\+?[0-9 ]{6,20}$", "Digits, spaces and an optional leading +.")],
         help_text="Optional. Publishing this makes the number public.",
     )
-    photo = models.ImageField(upload_to="profile/", blank=True)
+    photo = models.ImageField(
+        upload_to="profile/", blank=True, validators=IMAGE_VALIDATORS, help_text=IMAGE_HELP
+    )
     open_to_work = models.BooleanField(default=True)
     availability_note = models.CharField(max_length=120, blank=True)
     strengths = models.TextField(blank=True, help_text=LINES_HELP)

@@ -19,6 +19,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ["title", "status", "is_featured", "is_published", "order"]
     list_editable = ["is_published", "order"]
     list_filter = ["status", "is_published"]
+    search_fields = ["title", "summary", "technologies"]
     prepopulated_fields = {"slug": ["title"]}
     inlines = [ProjectSpecInline, CaseStudySectionInline]
 
@@ -32,4 +33,5 @@ class CaseStudyPointInline(admin.StackedInline):
 class CaseStudySectionAdmin(admin.ModelAdmin):
     list_display = ["title", "project", "order"]
     list_filter = ["project"]
+    search_fields = ["title", "body"]
     inlines = [CaseStudyPointInline]

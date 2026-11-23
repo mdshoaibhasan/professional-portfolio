@@ -33,12 +33,14 @@ class SkillAdmin(admin.ModelAdmin):
     list_display = ["name", "category", "tier", "level_label", "order"]
     list_editable = ["order"]
     list_filter = ["tier", "category"]
+    search_fields = ["name"]
 
 
 @admin.register(Experience)
 class ExperienceAdmin(admin.ModelAdmin):
     list_display = ["__str__", "organization", "start_date", "end_date", "is_current", "order"]
     list_editable = ["order"]
+    search_fields = ["title", "organization", "summary"]
 
 
 @admin.register(Education)

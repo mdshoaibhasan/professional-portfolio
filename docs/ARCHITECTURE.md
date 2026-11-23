@@ -168,7 +168,8 @@ everything else (shell view with 404 status). Hashed `/assets/*` served directly
 - Public API read-only; inquiry endpoint throttled, size-limited, validated. Admin on non-default path.
 - Uploaded images: type/size validation; never user-uploaded from public site.
 - Dependencies pinned; `pip-audit` / `npm audit` in QA.
-- Privacy: inquiry retention period defined in Privacy Policy; IP stored hashed.
+- Privacy: inquiry retention period defined in Privacy Policy and enforced by `purge_inquiries` (D-037); IP stored hashed.
+- Admin: non-default path, 12-character minimum passwords, per-IP sign-in rate limiting (D-035), 2 MB image uploads.
 
 ## 8. BackgroundBridge case study method
 

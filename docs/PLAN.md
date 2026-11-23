@@ -10,7 +10,7 @@ Status legend: ✅ done · 🟡 awaiting approval · ⏳ not started · ⛔ bloc
 | 4 | Public Website | ✅ Approved 2026-11-23 (placeholders until owner content arrives) | — |
 | 5 | Django Backend | ✅ Approved 2026-11-23 | Host Python version (final pin) |
 | 6 | Contact System | ✅ Approved 2026-11-23 | SMTP details for real email (console backend until provided) |
-| 7 | Admin & Content Management | ⏳ | M5 |
+| 7 | Admin & Content Management | ✅ Approved 2026-11-23 | Retention period (owner decision) |
 | 8 | SEO & Analytics | ⏳ | Domain name; consent approach |
 | 9 | Quality Assurance | ⏳ | M4–M8 |
 | 10 | Deployment | ⏳ | Hosting details; explicit deploy approval |
@@ -122,7 +122,13 @@ Backend review fixes (2026-11-23, D-033/D-034): reading the API no longer create
 - Frontend form (RHF + Zod), accessible errors, success state, fallback email/WhatsApp links.
 - Acceptance: tests for valid, invalid, spam, throttled, and email-failure paths.
 
-## Milestone 7 — Admin & Content Management
+## Milestone 7 — Admin & Content Management ✅
+
+Delivered 2026-11-23: hardened admin site with per-IP sign-in rate limiting (5 failures → 15 min, D-035); image
+uploads capped at 2 MB, JPG/PNG/WebP only (profile photo, project covers); bulk inquiry status actions; search on
+projects, services, skills, experience and case-study sections; `purge_inquiries` retention command (deletes nothing
+until the owner sets a period, D-037). CSV export skipped (D-036). Verified: 61 backend tests (17 new, incl. every
+admin page rendering), ruff, no missing migrations.
 
 - Django Admin: list displays, filters, search, ordering, inline editing, image fields with size validation.
 - Inquiry admin: status workflow (new / contacted / closed / spam), read-only submitted data, CSV export (optional).

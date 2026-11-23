@@ -34,6 +34,7 @@ only ever talks to one origin.
 | `.venv/Scripts/ruff.exe check . && .venv/Scripts/ruff.exe format --check .` | Lint and formatting check (**must pass before any commit**) |
 | `.venv/Scripts/python.exe manage.py makemigrations --check --dry-run` | Confirm no model change is missing a migration |
 | `.venv/Scripts/python.exe manage.py seed_content` | Load initial content from `apps/profiles/seed/content.json` (details below) |
+| `.venv/Scripts/python.exe manage.py purge_inquiries --dry-run` | Show which inquiries are past the retention period; drop `--dry-run` to delete them. Does nothing until `INQUIRY_RETENTION_DAYS` / `INQUIRY_SPAM_RETENTION_DAYS` are set |
 
 **`seed_content`** creates each item (the profile, each list, each service/project slug) at most once, tracked
 in `SeedRecord`. Admin edits are never overwritten and deleted content never comes back. New items added to the
@@ -58,10 +59,21 @@ and a non-default `DJANGO_ADMIN_PATH`. It turns on HTTPS redirects, secure cooki
 | `manage.py migrate`, `collectstatic`, `seed_content` (first deploy) | Schema, admin static files, initial content |
 | `API_NUM_PROXIES` | Number of reverse proxies in front of Django (default `0`). If the host has a proxy and this stays `0`, all visitors share one rate-limit bucket: **5 inquiries per hour for the whole site**. If it is set higher than the real number, visitors can bypass limits with a fake `X-Forwarded-For` header. |
 | `INQUIRY_NOTIFY_EMAIL` + `EMAIL_*` | Not enforced at start-up. If unset, inquiries are still saved, but no email is sent and each one records "Notification email not configured". |
+| `INQUIRY_RETENTION_DAYS`, `INQUIRY_SPAM_RETENTION_DAYS` | Retention period from the Privacy Policy. Schedule `purge_inquiries` daily on the host (Milestone 10) |
 | `DJANGO_BEHIND_TLS_PROXY` | Set to `True` only if the host terminates HTTPS in a proxy and sends `X-Forwarded-Proto` |
 
 Check a production configuration locally (needs those variables set in the shell):
 `DJANGO_SETTINGS_MODULE=config.settings.prod .venv/Scripts/python.exe manage.py check --deploy`
+
+## Admin
+
+- **Sign-in rate limiting:** after 5 failed sign-ins from one IP, further attempts from it are refused (HTTP 429)
+  for 15 minutes after the last failure (`ADMIN_LOGIN_MAX_FAILURES`, `ADMIN_LOGIN_LOCKOUT_SECONDS`). It is counted
+  per IP, so attempts from elsewhere can't lock you out. If you lock yourself out locally, wait or restart the dev
+  server (the development cache is in memory).
+- **Images:** the profile photo and project covers accept JPG, PNG or WebP up to 2 MB.
+- **Inquiries:** submitted data is read-only. Change the status on the detail page, or select several and use the
+  *Mark selected as …* actions. Inquiries can't be added by hand.
 
 ## API (`/api/v1/`, public)
 

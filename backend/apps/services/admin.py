@@ -8,6 +8,7 @@ class ServiceAdmin(admin.ModelAdmin):
     list_display = ["title", "tier", "is_active", "order"]
     list_editable = ["is_active", "order"]
     list_filter = ["tier", "is_active"]
+    search_fields = ["title", "summary", "description"]
     prepopulated_fields = {"slug": ["title"]}
 
 

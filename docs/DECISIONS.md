@@ -174,3 +174,21 @@ fix a typo and resend) and remembered in the default cache (DatabaseCache in pro
 until it expires. A reused token gets the same 400 as an expired one, and the existing form recovery fetches a new
 token. Tokens now sign a random value: signing a constant gave identical tokens to visitors who loaded the form in
 the same second. The lifetime stays 24 h.
+
+### D-035 · 2026-11-23 · Accepted (owner, M7 approval 2026-11-23)
+**Admin sign-in rate limiting built in, no package.** A custom `AdminSite` (`config/admin_site.py`, installed via
+`config.apps.PortfolioAdminConfig`) refuses sign-in POSTs from an IP after `ADMIN_LOGIN_MAX_FAILURES` (5) failures,
+until `ADMIN_LOGIN_LOCKOUT_SECONDS` (900) pass without another failure. Counts live in the default cache (shared
+DatabaseCache in production), keyed by a hash of the IP. Per IP, not per username, so nobody can lock the owner
+out from elsewhere. *Alternative:* django-axes. It is more complete but adds a dependency and its own tables, which
+is too much for a single-admin site.
+
+### D-036 · 2026-11-23 · Accepted (owner, M7 approval 2026-11-23)
+**No CSV export of inquiries.** It was optional in the plan. It would add a one-click bulk export of visitors'
+personal data for little benefit at this volume. Revisit if the owner needs it.
+
+### D-037 · 2026-11-23 · Accepted (owner, M7 approval 2026-11-23)
+**Retention is configured, not assumed.** `purge_inquiries` deletes inquiries older than `INQUIRY_RETENTION_DAYS` and
+spam older than `INQUIRY_SPAM_RETENTION_DAYS`. Both are unset by default, and then it deletes nothing: the period is
+the owner's decision and must match the Privacy Policy (CONTENT_CHECKLIST §H). Scheduling is part of Milestone 10.
+Image uploads are capped at 2 MB and limited to JPG/PNG/WebP (`apps/uploads.py`). Django has no built-in per-file cap.

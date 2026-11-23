@@ -32,7 +32,7 @@ ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS")
 CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
+    "config.apps.PortfolioAdminConfig",  # django.contrib.admin with sign-in rate limiting
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -101,12 +101,15 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
 MEDIA_ROOT = Path(env("MEDIA_ROOT", str(BASE_DIR / "media")))
 
-# Uploads come only from the admin; keep them small.
+# Request-size limits for form data. These do NOT cap file size: images are limited in apps/uploads.py.
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
 
 # Admin lives at a non-default path (no leading/trailing slash in the env value).
 ADMIN_PATH = env("DJANGO_ADMIN_PATH", "admin").strip("/")
+# Sign-in rate limiting per IP (config/admin_site.py, D-035).
+ADMIN_LOGIN_MAX_FAILURES = int(env("ADMIN_LOGIN_MAX_FAILURES", "5"))
+ADMIN_LOGIN_LOCKOUT_SECONDS = int(env("ADMIN_LOGIN_LOCKOUT_SECONDS", "900"))
 
 REST_FRAMEWORK = {
     # Deny by default; public read-only views opt in explicitly.
@@ -128,6 +131,12 @@ REST_FRAMEWORK = {
 INQUIRY_NOTIFY_EMAIL = env("INQUIRY_NOTIFY_EMAIL")
 INQUIRY_MIN_SUBMIT_SECONDS = int(env("INQUIRY_MIN_SUBMIT_SECONDS", "3"))
 INQUIRY_TOKEN_MAX_AGE_SECONDS = int(env("INQUIRY_TOKEN_MAX_AGE_SECONDS", str(24 * 60 * 60)))
+# Days to keep inquiries before `manage.py purge_inquiries` deletes them. Unset = keep everything (the owner
+# has not chosen a period yet; the Privacy Policy must state the same one).
+INQUIRY_RETENTION_DAYS = int(env("INQUIRY_RETENTION_DAYS")) if env("INQUIRY_RETENTION_DAYS") else None
+INQUIRY_SPAM_RETENTION_DAYS = (
+    int(env("INQUIRY_SPAM_RETENTION_DAYS")) if env("INQUIRY_SPAM_RETENTION_DAYS") else None
+)
 EMAIL_TIMEOUT = 10  # seconds; a slow mail server must not hang the request
 
 # Security headers that apply everywhere (HTTPS-only settings live in prod.py).
