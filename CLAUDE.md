@@ -129,3 +129,6 @@ Backend (run inside `backend/`, details in [backend/README.md](backend/README.md
 3. Build/tests pass for the touched area.
 4. Docs updated (PLAN status, DECISIONS, CONTENT_CHECKLIST).
 5. Clear commit message describing *why*.
+6. **No AI co-author trailers.** Never add `Co-Authored-By:` (or similar) lines for Claude or any other AI tool to
+   commit messages or PR descriptions. Commits are authored by the owner only:
+   `Md. Shoaib Hasan <179633241+mdshoaibhasan@users.noreply.github.com>` (owner's decision, 2026-11-23).
