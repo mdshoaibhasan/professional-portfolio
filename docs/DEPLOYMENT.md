@@ -193,7 +193,13 @@ Free includes them; if the tab is available, enable the daily schedule as an ext
 downloaded with `railway volume files ... download` (266,240 bytes, identical size), and checked locally (SQLite
 integrity check `ok`, restore validator accepts it, expected content). It was then uploaded back and restored with
 `restore_db` (safety copy kept, migrations applied, site 200, content unchanged). The `scp` route is documented by
-Railway but wasn't needed. Open the site first to wake the service before using ssh or file transfer.
+Railway but wasn't needed.
+
+**If the service was asleep:** open the site first to wake it before using ssh or file transfer. Right after a wake,
+the first `railway ssh` command can return **nothing at all**: no output and no error, and no backup is made (seen on
+2026-11-23). Run the command again; the second attempt worked. Always check for the `Backup written: …` line, and
+that the file appears in `ls /data/backups`, before downloading.
+
 On Windows Git Bash, prefix commands with `MSYS_NO_PATHCONV=1`, or `/backups/...` is rewritten into a Windows
 path. Local copies are kept in `~/portfolio-backups/` (outside the repo: backups contain personal data).
 
