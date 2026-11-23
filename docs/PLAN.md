@@ -9,13 +9,24 @@ Status legend: ✅ done · 🟡 awaiting approval · ⏳ not started · ⛔ bloc
 | 3 | Frontend Foundation | ✅ Approved 2026-11-23 | — |
 | 4 | Public Website | ✅ Approved 2026-11-23 (placeholders until owner content arrives) | — |
 | 5 | Django Backend | ✅ Approved 2026-11-23 | Host Python version (final pin) |
-| 6 | Contact System | 🔨 In progress | SMTP details (console email until provided) |
+| 6 | Contact System | ✅ Approved 2026-11-23 | SMTP details for real email (console backend until provided) |
 | 7 | Admin & Content Management | ⏳ | M5 |
 | 8 | SEO & Analytics | ⏳ | Domain name; consent approach |
 | 9 | Quality Assurance | ⏳ | M4–M8 |
 | 10 | Deployment | ⏳ | Hosting details; explicit deploy approval |
 
 Each milestone ends with: verification → doc updates → report → **approval gate** → Git checkpoint commit (with approval).
+
+### Cross-cutting: Positioning update — Software Engineer (D-029) 🟡
+
+- [x] 2026-11-23 Docs updated: [POSITIONING.md](POSITIONING.md) (new), MASTER_PROMPT amendment note, CLAUDE.md,
+      DECISIONS (D-029 to D-032), CONTENT_CHECKLIST (§A, §E, §F, §G), ARCHITECTURE, DESIGN_SYSTEM §7, README.
+- [x] 2026-11-23 D-030 to D-032 approved and implemented (POSITIONING §7): seed + local DB content, `Skill.tier`
+      (migration `profiles/0002`), page copy, hero Capabilities card, six-service layout. Verified: 36 backend
+      tests, ruff, no missing migrations; frontend check (19 tests) + build; desktop and true-375 px screenshots
+      (no horizontal overflow on /, /services, /about, a service detail page).
+- [ ] 🟡 Awaiting owner review of the draft service copy and approval of this change set.
+- ⛔ Partly blocked by owner answers: CONTENT_CHECKLIST §F (PHP/CSS/JS, learning list) and §G (service scopes).
 
 ---
 
@@ -95,7 +106,16 @@ API-down fallback. `inquiries` app moved to Milestone 6.
 - Frontend switched from fixtures to API.
 - Acceptance: tests pass; `manage.py check --deploy` clean under prod settings.
 
-## Milestone 6 — Contact System
+## Milestone 6 — Contact System ✅
+
+Delivered 2026-11-23: `inquiries` app (model, read-only admin with editable status), `POST /api/v1/inquiries/`
+and `GET /api/v1/inquiries/form-token/`; save-then-notify with failure recorded, honeypot, signed form token with
+minimum fill time, per-IP rate limit (spoofed X-Forwarded-For ignored), hashed IP, no PII in logs. Frontend form
+with React Hook Form + Zod, inline accessible errors, server error mapping, expired-token recovery, rate-limit and
+network messages with email fallback. Verified: 36 backend tests, 19 frontend tests (Vitest), real browser
+submission end-to-end (stored, emailed with Reply-To, success focused), 199/199 page checks, 30/30 regression.
+Privacy policy corrected to state how IPs are actually handled.
+Backend review fixes (2026-11-23, D-033/D-034): reading the API no longer creates the profile; `seed_content` never recreates deleted content (`SeedRecord`, migration `profiles/0003`); form tokens are unique and single use. 44 backend tests.
 
 - `POST /api/v1/inquiries/`: serializer validation, honeypot, minimum-submit-time check, throttling (DB-backed cache).
 - Save → then notify by email (failure logged, never fails the request).

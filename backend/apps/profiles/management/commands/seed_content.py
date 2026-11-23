@@ -1,16 +1,22 @@
 """Load the initial site content from apps/profiles/seed/content.json.
 
-Safe to re-run: it only fills empty tables and creates missing projects/services by slug,
-so content edited in the admin is never overwritten. Missing owner facts stay empty (D-018).
+Safe to re-run. Each item (the profile, each list table, each service/project by slug) is created at
+most once: a SeedRecord remembers it, so content edited *or deleted* in the admin is never overwritten
+or brought back. New items added to content.json later are still created. Missing owner facts stay
+empty (D-018).
+
+A database seeded before SeedRecord existed is "adopted" on the first run: everything in the seed file
+is recorded as seeded and nothing is created, because a missing item may have been deleted on purpose.
 """
 
 import json
+from collections.abc import Callable
 from pathlib import Path
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from apps.profiles.models import Certification, Education, Experience, Profile, Skill
+from apps.profiles.models import Certification, Education, Experience, Profile, SeedRecord, Skill
 from apps.projects.models import CaseStudyPoint, CaseStudySection, Project, ProjectSpec
 from apps.services.models import ProcessStep, Service
 
@@ -30,17 +36,28 @@ def as_paragraphs(items) -> str:
 
 
 class Command(BaseCommand):
-    help = "Seed initial site content (only fills empty tables; never overwrites edits)."
+    help = "Seed initial site content (each item once; never overwrites or restores edited/deleted content)."
 
     @transaction.atomic
     def handle(self, *args, **options):
         data = json.loads(SEED_FILE.read_text(encoding="utf-8"))
+        self.adopting = not SeedRecord.objects.exists() and (
+            Profile.objects.exists() or Service.objects.exists() or Project.objects.exists()
+        )
+        if self.adopting:
+            self.stdout.write(
+                "Existing content without seed records: recording it as seeded, creating nothing."
+            )
         self._profile(data["profile"])
         self._list(
             Skill,
             data["skills"],
             lambda i, s: Skill(
-                name=s["name"], category=s["category"], level_label=text(s["level_label"]), order=i
+                name=s["name"],
+                category=s["category"],
+                tier=s["tier"],
+                level_label=text(s["level_label"]),
+                order=i,
             ),
         )
         self._list(
@@ -86,13 +103,24 @@ class Command(BaseCommand):
         for index, project in enumerate(data["projects"]):
             self._project(index, project)
 
-    def _report(self, label: str, created: bool) -> None:
-        verb = self.style.SUCCESS("created") if created else "skipped (already present)"
-        self.stdout.write(f"{label}: {verb}")
+    def _once(self, key: str, label: str, exists: bool, create: Callable[[], None]) -> None:
+        """Create an item unless it was seeded before, already exists, or the database is being adopted."""
+        if SeedRecord.objects.filter(key=key).exists():
+            outcome = "skipped (seeded before)"
+        elif exists:
+            outcome = "skipped (already present)"
+        elif self.adopting:
+            outcome = "skipped (missing from existing content; not recreated)"
+        else:
+            create()
+            outcome = self.style.SUCCESS("created")
+        SeedRecord.objects.get_or_create(key=key)
+        self.stdout.write(f"{label}: {outcome}")
 
     def _profile(self, p) -> None:
-        if Profile.objects.exists():
-            return self._report("Profile", False)
+        self._once("profile", "Profile", Profile.objects.exists(), lambda: self._create_profile(p))
+
+    def _create_profile(self, p) -> None:
         Profile.objects.create(
             name=text(p["name"]),
             headline=p["headline"],
@@ -105,19 +133,22 @@ class Command(BaseCommand):
             availability_note=p["availability_note"],
             strengths=as_lines(p["strengths"]),
         )
-        self._report("Profile", True)
 
     def _list(self, model, items, build) -> None:
-        label = model._meta.verbose_name_plural.capitalize()
-        if model.objects.exists():
-            return self._report(label, False)
-        model.objects.bulk_create(build(i, item) for i, item in enumerate(items))
-        self._report(f"{label} ({len(items)})", True)
+        self._once(
+            model._meta.model_name,
+            f"{model._meta.verbose_name_plural.capitalize()} ({len(items)})",
+            model.objects.exists(),
+            lambda: model.objects.bulk_create(build(i, item) for i, item in enumerate(items)),
+        )
 
     def _service(self, index: int, s) -> None:
-        _, created = Service.objects.get_or_create(
-            slug=s["slug"],
-            defaults=dict(
+        self._once(
+            f"service:{s['slug']}",
+            f"Service {s['slug']}",
+            Service.objects.filter(slug=s["slug"]).exists(),
+            lambda: Service.objects.create(
+                slug=s["slug"],
                 title=s["title"],
                 tier=s["tier"],
                 summary=s["summary"],
@@ -130,11 +161,16 @@ class Command(BaseCommand):
                 order=index,
             ),
         )
-        self._report(f"Service {s['slug']}", created)
 
     def _project(self, index: int, p) -> None:
-        if Project.objects.filter(slug=p["slug"]).exists():
-            return self._report(f"Project {p['slug']}", False)
+        self._once(
+            f"project:{p['slug']}",
+            f"Project {p['slug']}",
+            Project.objects.filter(slug=p["slug"]).exists(),
+            lambda: self._create_project(index, p),
+        )
+
+    def _create_project(self, index: int, p) -> None:
         project = Project.objects.create(
             slug=p["slug"],
             title=p["title"],
@@ -166,4 +202,3 @@ class Command(BaseCommand):
                 CaseStudyPoint(section=section, title=pt["title"], text=pt["text"], order=j)
                 for j, pt in enumerate(sec["points"])
             )
-        self._report(f"Project {p['slug']}", True)

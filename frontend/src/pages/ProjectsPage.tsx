@@ -12,7 +12,7 @@ export default function ProjectsPage() {
     <>
       <Seo
         title="Projects"
-        description="Selected software projects and case studies, including BackgroundBridge, a Django-based public-information search and reporting platform."
+        description="Selected independent software projects and case studies."
       />
       <PageHeader label="Projects" title="Selected work">
         Case studies written from the actual source code — what was built, how, and why.

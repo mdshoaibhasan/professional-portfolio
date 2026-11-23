@@ -5,7 +5,8 @@ import { useSiteContent } from "@/app/site-content";
 import { BackgroundTimeline } from "@/components/sections/BackgroundTimeline";
 import { ContactCta } from "@/components/sections/ContactCta";
 import { ProcessSteps } from "@/components/sections/ProcessSteps";
-import { FeaturedProjectCard, ProjectCard } from "@/components/sections/ProjectCards";
+import { CapabilitiesCard } from "@/components/sections/CapabilitiesCard";
+import { ProjectCard } from "@/components/sections/ProjectCards";
 import { SecondaryServices, ServiceCard } from "@/components/sections/ServiceCards";
 import { SkillGroups } from "@/components/sections/SkillGroups";
 import { ButtonLink } from "@/components/ui/ButtonLink";
@@ -17,27 +18,25 @@ import { Fact, Todo } from "@/components/ui/Todo";
 export default function HomePage() {
   const { profile } = useSiteContent();
   const { projects, services } = useLoaderData<typeof homeLoader>();
-  const featured = projects.find((project) => project.is_featured);
   const primaryServices = services.filter((service) => service.tier === "primary");
   const secondaryServices = services.filter((service) => service.tier === "secondary");
 
   return (
     <>
-      <Seo description="Python and Django developer building reliable web platforms and REST APIs. Available for freelance website, web application and API projects." />
+      <Seo description="Software Engineer building practical software solutions: websites, web applications, backend systems and APIs. Available for freelance projects." />
 
-      {/* Hero: identity + strongest project in the first viewport (D-012) */}
+      {/* Hero: identity + capabilities in the first viewport (D-012, hero card per D-032) */}
       <section aria-labelledby="hero-title" className="relative isolate overflow-hidden">
         <div aria-hidden="true" className="absolute inset-0 -z-10 hairline-grid" />
         <div className="container-page grid items-center gap-12 py-section lg:grid-cols-[1.15fr_0.85fr]">
           <div>
             <StatusChip available={profile.open_to_work} label={profile.availability_note} />
-            <h1 id="hero-title" className="mt-6 text-display">
-              Python &amp; Django developer building{" "}
-              <span className="text-primary-text">reliable</span> web platforms and APIs.
+            <p className="mt-6 label-mono text-accent-text">{profile.headline}</p>
+            <h1 id="hero-title" className="mt-3 text-display">
+              Building <span className="text-primary-text">Practical</span> Software Solutions.
             </h1>
             <p className="mt-6 max-w-[60ch] text-body-lg text-fg-secondary">
-              I design and build backend-driven web applications — from data models and REST APIs to
-              the interfaces people use. Based in{" "}
+              <Fact value={profile.short_bio} missing="introduction" /> Based in{" "}
               <Fact value={profile.location_public} missing="location" />, available for remote
               projects.
             </p>
@@ -49,18 +48,8 @@ export default function HomePage() {
                 Start a project
               </ButtonLink>
             </div>
-            {featured && (
-              <p className="mt-8 text-sm text-muted lg:hidden">
-                Featured:{" "}
-                <Link to={`/projects/${featured.slug}`}>{featured.title} case study →</Link>
-              </p>
-            )}
           </div>
-          {featured && (
-            <div className="hidden lg:block">
-              <FeaturedProjectCard project={featured} />
-            </div>
-          )}
+          <CapabilitiesCard />
         </div>
       </section>
 
@@ -91,7 +80,7 @@ export default function HomePage() {
         title="What I can build for you"
         intro="Development is the core of what I do. Every engagement starts with a clear, written scope."
       >
-        <ul className="grid gap-5 md:grid-cols-3">
+        <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {primaryServices.map((service) => (
             <li key={service.slug}>
               <ServiceCard service={service} />
@@ -101,12 +90,9 @@ export default function HomePage() {
         <SecondaryServices services={secondaryServices} />
       </Section>
 
-      <Section id="about" index="03" label="About & stack" title="A developer who communicates">
+      <Section id="about" index="03" label="About & stack" title="An engineer who communicates">
         <div className="grid gap-12 lg:grid-cols-2">
           <div className="space-y-5 text-body-lg text-fg-secondary">
-            <p>
-              <Fact value={profile.short_bio} missing="short bio, 2–3 sentences" />
-            </p>
             <p>
               My background is in Computer Science and Engineering, and I&rsquo;m based in{" "}
               <Fact value={profile.location_public} missing="location" />. Alongside development, I

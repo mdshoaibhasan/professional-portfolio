@@ -69,7 +69,7 @@ class SkillSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Skill
-        fields = ["name", "category", "level_label"]
+        fields = ["name", "category", "tier", "level_label"]
 
     def get_level_label(self, obj: Skill) -> str | None:
         return or_none(obj.level_label)

@@ -12,11 +12,11 @@ export default function AboutPage() {
     <>
       <Seo
         title="About"
-        description="Python and Django developer and Computer Science and Engineering student in Bangladesh — background, skills and approach."
+        description="Software Engineer and Computer Science and Engineering student in Bangladesh — background, skills and approach."
       />
       <PageHeader label="About" title="About me">
-        Software developer focused on Python, Django and REST APIs, with a background in team
-        operations and customer-facing work.
+        Software Engineer building websites, web applications, backend systems and APIs, with a
+        background in team operations and customer-facing work.
       </PageHeader>
 
       <section aria-label="Biography" className="py-section">
@@ -41,7 +41,7 @@ export default function AboutPage() {
         id="stack"
         label="Stack"
         title="What I work with"
-        intro="Tools I use in real projects. Where my experience is still foundational, it says so."
+        intro="Grouped by area. Everything listed is something I use in real work; where my experience is still foundational, it says so."
       >
         <SkillGroups />
       </Section>

@@ -15,8 +15,18 @@ export const primaryNav: NavItem[] = [
 export const contactNavItem: NavItem = { label: "Start a project", to: "/contact" };
 
 export const skillCategoryLabels = {
-  language: "Languages",
-  framework: "Frameworks & APIs",
-  data: "Data",
+  backend: "Backend",
+  frontend: "Frontend",
+  mobile: "Mobile",
+  database: "Database",
   tool: "Tools",
+} as const;
+
+/** Display order of skill groups; tools come last because they are not a capability area. */
+export const skillCategoryOrder = ["backend", "frontend", "mobile", "database", "tool"] as const;
+
+/** Skills the owner does not yet use in real work, each shown in its own clearly labelled group (D-031). */
+export const nonUseTierLabels = {
+  learning: "Currently learning",
+  interested: "Interested in",
 } as const;

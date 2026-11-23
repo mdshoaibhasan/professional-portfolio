@@ -2,6 +2,9 @@
 
 > Source of truth for project scope. Saved verbatim during Milestone 1 (2026-11-23).
 > Do not edit the specification below; record changes and clarifications in `docs/DECISIONS.md`.
+>
+> **Amended 2026-11-23 (D-029):** professional positioning is now **Software Engineer**. §2, the framing of §3, and
+> §4, §5 and §7 (homepage) are superseded where they conflict with [POSITIONING.md](POSITIONING.md).
 
 ---
 

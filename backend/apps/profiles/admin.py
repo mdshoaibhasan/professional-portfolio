@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Certification, Education, Experience, Profile, Skill, SocialLink
+from .models import Certification, Education, Experience, Profile, SeedRecord, Skill, SocialLink
 
 
 @admin.register(Profile)
@@ -14,11 +14,25 @@ class ProfileAdmin(admin.ModelAdmin):
         return False
 
 
+@admin.register(SeedRecord)
+class SeedRecordAdmin(admin.ModelAdmin):
+    """Read-only. Deleting a record lets seed_content create that item again on its next run."""
+
+    list_display = ["key", "created_at"]
+    search_fields = ["key"]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(Skill)
 class SkillAdmin(admin.ModelAdmin):
-    list_display = ["name", "category", "level_label", "order"]
+    list_display = ["name", "category", "tier", "level_label", "order"]
     list_editable = ["order"]
-    list_filter = ["category"]
+    list_filter = ["tier", "category"]
 
 
 @admin.register(Experience)

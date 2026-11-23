@@ -142,10 +142,17 @@ The spec lists 13 homepage sections; several overlap. Proposed 8, in order:
    **BackgroundBridge spec card** beside it so identity *and* strongest project are visible in the first viewport
    (on mobile, where the card falls below the fold, a one-line "Featured: BackgroundBridge →" link sits under the CTAs).
    Absorbs "professional introduction" and "technical highlights".
+   > **Changed (D-032, approved and implemented 2026-11-23):** the BackgroundBridge card and mobile "Featured" link are replaced
+   > by a **Capabilities** spec card (same component style, carries the one glow). Reason: Software Engineer
+   > positioning (D-029) forbids BackgroundBridge as the defining identity.
 2. **01 / Selected work** — BackgroundBridge large, other projects as standard cards.
+   *(D-032 proposes equal-weight cards once more than one project is verified.)*
 3. **02 / Services** — 3 development services as full cards; social media services as a compact secondary row.
+   *(POSITIONING §4: becomes 5 primary full cards under "Software Development" and 1 secondary compact card under
+   "Digital Marketing". Same visual language, so the hierarchy principle (§1.6) is unchanged.)*
 4. **03 / About & stack** — short bio + skills grouped by category (Languages, Frameworks, Tools) with honest
    level wording ("basic" where true). No percentages.
+   *(D-031 proposes grouping by capability area and separate "Currently learning" / "Interested in" groups.)*
 5. **04 / Process** — 4 steps (Discover → Plan → Build → Launch & support).
 6. **05 / Experience & education** — one combined timeline incl. certification.
 7. **Contact CTA** — short prompt + button + email fallback.

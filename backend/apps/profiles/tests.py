@@ -9,7 +9,7 @@ from apps.profiles.management.commands.seed_content import SEED_FILE
 from apps.projects.models import Project
 from apps.services.models import Service
 
-from .models import Education, Experience, Profile, Skill
+from .models import Education, Experience, Profile, SeedRecord, Skill
 
 SITE_URL = "/api/v1/site/"
 
@@ -47,12 +47,68 @@ class SeedRoundTripTests(TestCase):
 
     def test_seed_is_idempotent_and_never_overwrites_edits(self):
         Profile.objects.filter(pk=1).update(name="Edited Name")
-        Service.objects.filter(slug="website-development").update(title="Edited")
+        Service.objects.filter(slug="web-development").update(title="Edited")
         call_command("seed_content", stdout=StringIO())
         self.assertEqual(Profile.load().name, "Edited Name")
-        self.assertEqual(Service.objects.get(slug="website-development").title, "Edited")
+        self.assertEqual(Service.objects.get(slug="web-development").title, "Edited")
         self.assertEqual(Skill.objects.count(), len(self.seed["skills"]))
         self.assertEqual(Project.objects.count(), 1)
+
+
+def seed() -> str:
+    out = StringIO()
+    call_command("seed_content", stdout=out)
+    return out.getvalue()
+
+
+class SeedSafetyTests(TestCase):
+    """Re-running the seed must never block, overwrite or resurrect content (backend README review)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.data = json.loads(SEED_FILE.read_text(encoding="utf-8"))
+
+    def test_reading_the_site_before_seeding_does_not_block_the_profile_seed(self):
+        before = self.client.get(SITE_URL)
+        self.assertEqual(before.status_code, 200)
+        self.assertEqual(before.json()["profile"]["headline"], "Software Engineer")
+        self.assertFalse(Profile.objects.exists())  # reading created nothing
+        seed()
+        self.assertEqual(Profile.load().short_bio, self.data["profile"]["short_bio"])
+
+    def test_deleted_content_is_not_brought_back(self):
+        seed()
+        project_slug = self.data["projects"][0]["slug"]
+        service_slug = self.data["services"][0]["slug"]
+        Project.objects.filter(slug=project_slug).delete()
+        Service.objects.filter(slug=service_slug).delete()
+        Skill.objects.all().delete()
+        output = seed()
+        self.assertFalse(Project.objects.filter(slug=project_slug).exists())
+        self.assertFalse(Service.objects.filter(slug=service_slug).exists())
+        self.assertFalse(Skill.objects.exists())
+        self.assertNotIn("created", output)
+        self.assertEqual(self.client.get(f"/api/v1/projects/{project_slug}/").status_code, 404)
+
+    def test_items_added_to_the_seed_file_later_are_still_created(self):
+        seed()
+        slug = self.data["services"][-1]["slug"]
+        Service.objects.filter(slug=slug).delete()
+        SeedRecord.objects.filter(key=f"service:{slug}").delete()  # as if the item were new in content.json
+        seed()
+        self.assertTrue(Service.objects.filter(slug=slug).exists())
+
+    def test_existing_database_without_records_is_adopted_not_refilled(self):
+        seed()
+        SeedRecord.objects.all().delete()  # a database seeded before SeedRecord existed
+        slug = self.data["projects"][0]["slug"]
+        Project.objects.filter(slug=slug).delete()
+        output = seed()
+        self.assertIn("creating nothing", output)
+        self.assertFalse(Project.objects.filter(slug=slug).exists())
+        self.assertTrue(SeedRecord.objects.filter(key=f"project:{slug}").exists())
+        seed()
+        self.assertFalse(Project.objects.filter(slug=slug).exists(), "still gone on the next run")
 
 
 class SiteContentTests(TestCase):

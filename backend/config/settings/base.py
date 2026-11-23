@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "apps.profiles",
     "apps.projects",
     "apps.services",
+    "apps.inquiries",
 ]
 
 MIDDLEWARE = [
@@ -114,8 +115,20 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.AnonRateThrottle"],
-    "DEFAULT_THROTTLE_RATES": {"anon": env("API_ANON_RATE", "120/minute")},
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": env("API_ANON_RATE", "120/minute"),
+        "inquiries": env("INQUIRY_RATE_LIMIT", "5/hour"),
+    },
+    # Identify clients by REMOTE_ADDR. DRF's default (None) trusts any X-Forwarded-For header,
+    # which lets a bot bypass rate limits by sending a fake one. Set to the real proxy count in M10.
+    "NUM_PROXIES": int(env("API_NUM_PROXIES", "0")),
 }
+
+# Contact form (apps/inquiries)
+INQUIRY_NOTIFY_EMAIL = env("INQUIRY_NOTIFY_EMAIL")
+INQUIRY_MIN_SUBMIT_SECONDS = int(env("INQUIRY_MIN_SUBMIT_SECONDS", "3"))
+INQUIRY_TOKEN_MAX_AGE_SECONDS = int(env("INQUIRY_TOKEN_MAX_AGE_SECONDS", str(24 * 60 * 60)))
+EMAIL_TIMEOUT = 10  # seconds; a slow mail server must not hang the request
 
 # Security headers that apply everywhere (HTTPS-only settings live in prod.py).
 SECURE_CONTENT_TYPE_NOSNIFF = True

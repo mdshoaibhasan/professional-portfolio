@@ -10,8 +10,9 @@ Legend: **[R]** required for launch · **[O]** optional / nice to have · 🔒 p
 ## A. Identity & profile
 
 - [ ] **[R]** Public display name (exactly as it should appear)
-- [ ] **[R]** Professional headline (e.g., "Python & Django Developer") — we'll draft options; you choose
-- [ ] **[R]** Short bio (2–3 sentences) and longer About text (or bullet facts we can turn into copy)
+- [x] **[R]** Professional title + headline: **Software Engineer**, "Building Practical Software Solutions." (received 2026-11-23 → POSITIONING.md §1)
+- [x] **[R]** Introduction sentence (received 2026-11-23 → POSITIONING.md §1). Confirm it is final wording, not a draft.
+- [ ] **[R]** Longer About text (or bullet facts we can turn into copy)
 - [ ] **[R]** Professional photo (square, ≥ 800×800 px, good lighting) — or confirm you prefer no photo
 - [ ] **[R]** Public location wording (e.g., "Bangladesh" or "Dhaka, Bangladesh") — city-level at most
 - [ ] **[R]** Public contact email (consider a dedicated address, e.g., on your domain)
@@ -49,7 +50,7 @@ For each role:
 
 ## E. Projects
 
-### BackgroundBridge (flagship)
+### BackgroundBridge (independent selected project; not employment, not the defining identity — POSITIONING §5)
 - [x] **[R]** Local folder path to the source code — received and inspected 2026-11-23 → [BACKGROUNDBRIDGE_AUDIT.md](BACKGROUNDBRIDGE_AUDIT.md)
 - [ ] **[R]** Answers to the 7 questions in BACKGROUNDBRIDGE_AUDIT.md §8 (sole developer? parts you can explain? run tests? repo public? domain? Protect/crypto featured? new skills?)
 - [ ] **[R]** Your role (solo / team — if team, your specific contribution)
@@ -61,26 +62,44 @@ For each role:
 - [ ] **[O]** Existing screenshots/diagrams (we can also capture new ones with dummy data)
 
 ### Other projects
-- [ ] **[O]** List of other projects worth showing (paths and/or repo URLs) — 2–4 strong ones beat many weak ones
-- [ ] For each: role, dates, problem, stack, repo/demo links, screenshots
+- [ ] **[O]** List of other projects worth showing (paths and/or repo URLs) — 2–4 strong ones beat many weak ones.
+      **More important now:** with a technology-flexible identity, BackgroundBridge alone shows only Python/Django.
+- [ ] For each: role, dates, problem, stack, repo/demo links, screenshots (source inspected before anything is published)
 
-## F. Skills
+## F. Skills (three tiers — POSITIONING §3)
 
-Current verified list: Python, Django, Django REST Framework, REST API development, HTML, Bootstrap 5, SQLite,
-Git & GitHub, Postman, Linux (basic), Flutter & Dart (basic).
-- [ ] **[R]** Confirm list; add anything missing **that you can demonstrate** (e.g., CSS, JavaScript, MySQL/PostgreSQL?)
-- [ ] Note: this site will be built with React/TypeScript — that does **not** by itself make them your skills. List them only if you are comfortable discussing them in an interview.
+Current verified list, all **Use** tier: Python, Django, Django REST Framework, REST API development, HTML,
+Bootstrap 5, SQLite, Git & GitHub, Postman, Linux (basic), Flutter & Dart (basic).
+- [ ] **[R]** Confirm the list and that each item is **Use** tier (used on real work), not Learning
+- [ ] **[R]** **PHP** — named in the positioning brief but not in the verified list. Use, Learning, or Interested? Any project evidence?
+- [ ] **[R]** **CSS and JavaScript** — not verified. Needed to support "Frontend Development" and "Web Development" honestly. Use, Learning, or not at all?
+- [ ] **[R]** Databases beyond SQLite (MySQL / PostgreSQL)? Needed for "Database-Driven Applications" breadth.
+- [ ] **[R]** **Currently learning:** list (shown separately as "Currently learning", never as expertise)
+- [ ] **[O]** **Interested in:** list (shown separately, or omitted)
+- [ ] **[R]** Capability areas (POSITIONING §2): confirm each of the 7 should be shown. "Business Software Solutions" has no verified technology or project evidence yet.
+- [ ] Note: this site is built with React/TypeScript — that does **not** by itself make them your skills. List them only if you are comfortable discussing them in an interview.
 
-## G. Services
+## G. Services (two categories — POSITIONING §4)
 
-For each of the five services (Website Development, Web App & API Development, Social Media Page Management,
-Social Media Boosting & Advertising, Mobile App Development):
+**A. Software Development (primary):** Web Development · Web Application Development · Backend and API Development ·
+Mobile Application Development · Business and Custom Software Solutions.
+**B. Digital Marketing (secondary):** Digital Marketing & Social Media Management (merges the two former social services).
+
+- [ ] **[R]** Confirm you are **prepared to deliver each of the six today**. All six are live on the local site now;
+      any you don't confirm should be deactivated in the admin before launch.
+- [ ] **[R]** Review the **draft copy** for Web Application Development, Backend and API Development, Business and
+      Custom Software Solutions, and Digital Marketing & Social Media Management (POSITIONING §7)
+- [ ] **[R]** **Business and Custom Software Solutions** — new: what does it actually include (e.g. internal tools, admin dashboards, inventory/booking systems)? What is excluded?
+- [ ] **[R]** Web Application vs Backend & API Development — confirm the split and what distinguishes them for a client
+- [ ] **[R]** Digital Marketing: which of the five listed activities you actually offer (page management, content planning/publishing, boosting/paid ads, campaign management, targeting/optimisation)
+
+For each service:
 - [ ] **[R]** What you actually deliver (scope) and what is excluded
 - [ ] **[R]** Typical process/turnaround (no promises you can't keep)
 - [ ] **[O]** Pricing approach: fixed packages, "starting from", or "quote on request" (recommended initially)
 - [ ] **[R]** Currency/market: Bangladesh clients, international, or both (affects wording, BDT vs USD)
 - [ ] **[R]** Social services: which platforms (Facebook, Instagram, TikTok, …)? Have you managed pages/ads before (for whom, can it be mentioned)?
-- [ ] **[R]** Mobile App Development: given *basic* Flutter, confirm how to scope this honestly (e.g., "simple Flutter apps / MVPs, API-backed by Django")
+- [ ] **[R]** Mobile App Development: given *basic* Flutter, confirm how to scope this honestly (e.g., "simple Flutter apps / MVPs connected to an API"). Listing it as a primary service does not upgrade the skill level.
 - [ ] **[O]** Real past client work you have permission to mention (no names without permission)
 
 ## H. Legal & business
@@ -111,3 +130,4 @@ Social Media Boosting & Advertising, Mobile App Development):
 |---|---|---|
 | 2026-11-23 | BackgroundBridge source path (inspected) | docs/BACKGROUNDBRIDGE_AUDIT.md |
 | 2026-11-23 | Skills list, CSE student in Bangladesh, expected graduation Nov 2026, operations/customer experience (no details), Python web-dev certification (no details) | docs/MASTER_PROMPT.md §3 |
+| 2026-11-23 | Positioning: Software Engineer title, headline, introduction, capability areas, 6-service structure, BackgroundBridge placement | docs/POSITIONING.md (D-029) |

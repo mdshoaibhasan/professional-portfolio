@@ -1,8 +1,8 @@
 {
   "profile": {
     "name": null,
-    "headline": "Python & Django Developer",
-    "short_bio": null,
+    "headline": "Software Engineer",
+    "short_bio": "I design and develop modern websites, web applications, backend systems, APIs, and digital solutions that solve real-world problems.",
     "long_bio": null,
     "location_public": "Bangladesh",
     "email_public": null,
@@ -19,62 +19,74 @@
   "skills": [
     {
       "name": "Python",
-      "category": "language",
+      "category": "backend",
+      "tier": "use",
       "level_label": null
-    },
-    {
-      "name": "HTML",
-      "category": "language",
-      "level_label": null
-    },
-    {
-      "name": "Dart",
-      "category": "language",
-      "level_label": "Basic"
     },
     {
       "name": "Django",
-      "category": "framework",
+      "category": "backend",
+      "tier": "use",
       "level_label": null
     },
     {
       "name": "Django REST Framework",
-      "category": "framework",
+      "category": "backend",
+      "tier": "use",
       "level_label": null
     },
     {
       "name": "REST API development",
-      "category": "framework",
+      "category": "backend",
+      "tier": "use",
+      "level_label": null
+    },
+    {
+      "name": "HTML",
+      "category": "frontend",
+      "tier": "use",
       "level_label": null
     },
     {
       "name": "Bootstrap 5",
-      "category": "framework",
+      "category": "frontend",
+      "tier": "use",
       "level_label": null
     },
     {
+      "name": "Dart",
+      "category": "mobile",
+      "tier": "use",
+      "level_label": "Basic"
+    },
+    {
       "name": "Flutter",
-      "category": "framework",
+      "category": "mobile",
+      "tier": "use",
       "level_label": "Basic"
     },
     {
       "name": "SQLite",
-      "category": "data",
+      "category": "database",
+      "tier": "use",
       "level_label": null
     },
     {
       "name": "Git & GitHub",
       "category": "tool",
+      "tier": "use",
       "level_label": null
     },
     {
       "name": "Postman",
       "category": "tool",
+      "tier": "use",
       "level_label": null
     },
     {
       "name": "Linux",
       "category": "tool",
+      "tier": "use",
       "level_label": "Basic"
     }
   ],
@@ -299,8 +311,8 @@
   ],
   "services": [
     {
-      "slug": "website-development",
-      "title": "Website Development",
+      "slug": "web-development",
+      "title": "Web Development",
       "tier": "primary",
       "summary": "Fast, responsive business and personal websites with clean, maintainable code.",
       "description": "A clear, fast and professional website for an individual, small business or organisation — built to work well on phones first, and easy to keep up to date.",
@@ -326,16 +338,17 @@
       "scope_note": null
     },
     {
-      "slug": "web-app-api-development",
-      "title": "Web Application & API Development",
+      "slug": "web-application-development",
+      "title": "Web Application Development",
       "tier": "primary",
-      "summary": "Django and Django REST Framework applications: data models, admin, authentication and APIs.",
-      "description": "Backend-driven web applications built with Python, Django and Django REST Framework — from the data model and admin panel to secure, documented APIs that web or mobile front-ends can use.",
-      "ideal_for": "Internal tools, dashboards, data-driven websites, and backends for web or mobile apps.",
+      "summary": "Data-driven web applications with user accounts, admin panels and dashboards.",
+      "description": "Web applications where people sign in, manage data and get work done — built with Python and Django, with an admin panel for managing records and a responsive interface.",
+      "ideal_for": "Internal tools, dashboards, client portals and data-driven websites.",
       "includes": [
         "Data modelling and database design",
+        "User accounts, authentication and permissions",
         "Django admin for managing your data",
-        "REST API endpoints with validation and authentication",
+        "Responsive interface built with HTML and Bootstrap 5",
         "Automated tests for the core logic",
         "Deployment guidance and technical documentation"
       ],
@@ -345,8 +358,31 @@
       ],
       "benefits": [
         "Maintainable, conventional Django structure",
-        "Secure defaults: validation, permissions and safe configuration",
-        "A documented API that other developers can build on"
+        "Secure defaults: validation, permissions and safe configuration"
+      ],
+      "scope_note": null
+    },
+    {
+      "slug": "backend-api-development",
+      "title": "Backend and API Development",
+      "tier": "primary",
+      "summary": "REST APIs and backend systems that web and mobile apps can rely on.",
+      "description": "Backends and REST APIs built with Python, Django and Django REST Framework — validated, permission-checked and documented, so a website, mobile app or another system can use them safely.",
+      "ideal_for": "Backends for web or mobile apps, and businesses that need their data available through an API.",
+      "includes": [
+        "API design: resources, endpoints and data formats",
+        "Validation, authentication and permissions",
+        "Connecting your web or mobile front-end to the API",
+        "Automated tests for the API",
+        "API documentation for other developers"
+      ],
+      "excludes": [
+        "Large-scale distributed infrastructure",
+        "Interface design (see Web Application Development)"
+      ],
+      "benefits": [
+        "A documented API that other developers can build on",
+        "One backend serving both a website and an app"
       ],
       "scope_note": null
     },
@@ -354,12 +390,12 @@
       "slug": "mobile-app-development",
       "title": "Mobile Application Development",
       "tier": "primary",
-      "summary": "Simple Flutter apps and MVPs connected to a Django backend.",
-      "description": "Small, focused mobile apps built with Flutter, connected to a Django REST API — a practical way to test an idea or give existing customers a simple app.",
+      "summary": "Simple Flutter apps and MVPs connected to an API.",
+      "description": "Small, focused mobile apps built with Flutter and connected to a REST API — a practical way to test an idea or give existing customers a simple app.",
       "ideal_for": "Prototypes, MVPs and small apps with a clear, limited set of features.",
       "includes": [
         "Flutter app with the screens agreed in the scope",
-        "Integration with a Django REST API (new or existing)",
+        "Integration with a REST API (new or existing)",
         "Android build for testing and release"
       ],
       "excludes": [
@@ -374,48 +410,52 @@
       "scope_note": "My Flutter and Dart experience is at a foundational level, so I take on small, well-scoped mobile projects."
     },
     {
-      "slug": "social-media-management",
-      "title": "Social Media Page Management",
-      "tier": "secondary",
-      "summary": "Consistent, well-organised management of business social media pages.",
-      "description": "Organised, consistent management of your business pages, so they stay active and customers get timely responses.",
-      "ideal_for": "Small businesses that want an active, professional page without managing it daily.",
+      "slug": "business-custom-software",
+      "title": "Business and Custom Software Solutions",
+      "tier": "primary",
+      "summary": "Custom software built around a specific business process.",
+      "description": "Software for a specific business need — for example, replacing spreadsheets with a shared system for records, orders or bookings — designed around how your team actually works.",
+      "ideal_for": "Small businesses and teams with a manual process that a simple, dedicated system could handle.",
       "includes": [
-        "Page setup and profile information review",
-        "Content calendar planned with you",
-        "Scheduling and posting of agreed content",
-        "Responding to messages and comments within agreed limits",
-        "A short monthly summary of page activity"
+        "Requirements discussion and a written scope",
+        "Data model designed around your process",
+        "Admin panel for your team to manage records",
+        "User accounts and permissions",
+        "Deployment guidance and handover documentation"
       ],
       "excludes": [
-        "Paid advertising budget",
-        "Professional photo and video production"
+        "Enterprise-scale systems such as full ERP suites",
+        "Hardware and on-site IT setup"
       ],
       "benefits": [
-        "A consistent, professional presence",
-        "Faster, more reliable replies to customers"
+        "Software that fits your process, not the other way round",
+        "You own the code and the data"
       ],
       "scope_note": null
     },
     {
-      "slug": "social-media-advertising",
-      "title": "Social Media Boosting & Advertising",
+      "slug": "digital-marketing-social-media",
+      "title": "Digital Marketing & Social Media Management",
       "tier": "secondary",
-      "summary": "Planning and running boosted posts and ad campaigns on social platforms.",
-      "description": "Help planning and running boosted posts and ad campaigns, with the budget and audience agreed with you in advance.",
-      "ideal_for": "Businesses that want to promote a post, offer or page to a defined local audience.",
+      "summary": "Social media page management, content publishing and paid advertising campaigns.",
+      "description": "Organised management of your business pages and advertising: planning and publishing content, running boosted posts and ad campaigns, and adjusting targeting with a budget agreed with you in advance.",
+      "ideal_for": "Small businesses that want an active, professional page and well-targeted promotion without managing it daily.",
       "includes": [
-        "Campaign setup on the agreed platform",
-        "Audience and budget planning with you",
-        "Boosting selected posts",
-        "Monitoring and adjusting during the campaign",
-        "A summary of the results reported by the platform"
+        "Social media page management and profile review",
+        "Content planning and publishing on an agreed calendar",
+        "Boosted posts and paid advertising campaigns",
+        "Campaign management and monitoring",
+        "Audience targeting and campaign optimisation",
+        "Responding to messages and comments within agreed limits",
+        "A summary of page activity and platform-reported results"
       ],
       "excludes": [
         "Ad spend, which is paid by you directly to the platform",
+        "Professional photo and video production",
         "Guaranteed sales, leads or follower numbers"
       ],
       "benefits": [
+        "A consistent, professional presence",
         "Clear budget control",
         "Transparent reporting based on platform data"
       ],

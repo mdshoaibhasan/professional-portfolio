@@ -96,6 +96,8 @@ Profile (singleton)     name, headline, short_bio, long_bio, location_public, em
                         resume_file (opt), photo, open_to_work (bool), availability_note, updated_at
 SocialLink              profile→, platform, url, order
 Skill                   name, category (language/framework/tool/...), level_label (e.g. "Basic") (opt), order, is_featured
+                        → implemented (D-031): category = capability area (backend/frontend/mobile/database/tool),
+                          + tier (use/learning/interested, default use)
 Experience              title, organization, organization_url (opt), start_date, end_date (null=present), summary, highlights, order
 Education               institution, degree, field, start_date, end_date/expected, status, notes, order
 Certification           name, issuer, issue_date, credential_url (opt), order
@@ -124,12 +126,17 @@ Responses are versioned and cacheable (`Cache-Control: public, max-age=60`). Lis
 
 ## 4. Inquiry flow
 
-1. Client validates (Zod) → `POST /api/v1/inquiries/` with CSRF token (same-origin).
-2. Server: throttle check (DRF `AnonRateThrottle` backed by Django **DatabaseCache** — shared across worker processes,
-   no Redis) → honeypot must be empty → minimum time-to-submit check (signed timestamp) → serializer validation.
-3. **Save to DB** (transaction committed).
-4. Attempt email notification to owner (SMTP via host). On failure: log, store `notify_error`; response is still `201`.
-5. Return `201` with a generic success message. Spam/honeypot hits return a **generic success** (don't teach bots) but are stored as `spam` or dropped.
+1. The form loads a signed, unique, single-use token from `GET /api/v1/inquiries/form-token/` (`Cache-Control: no-store`); used tokens are remembered in the shared cache until they expire (D-034).
+2. Client validates (Zod) → `POST /api/v1/inquiries/` with the token. The token replaces CSRF protection: a cross-site
+   page cannot read it because the API sends no CORS headers, and there is no session to ride (D-025).
+3. Server: rate limit (`ScopedRateThrottle`, scope `inquiries`, 5/hour per IP; DB cache in production; client = REMOTE_ADDR,
+   `X-Forwarded-For` ignored unless `API_NUM_PROXIES` is set — D-026) → serializer validation → token check
+   (invalid/expired → 400; younger than `INQUIRY_MIN_SUBMIT_SECONDS` → spam) → honeypot (filled → spam).
+4. **Save to DB** in a transaction. IP stored only as a keyed hash.
+5. Real inquiries: email the owner (`Reply-To` = inquirer). On failure: `notify_error` recorded, error type logged
+   (no personal data); the response is still `201`.
+6. Return `201` with a generic message. Spam gets the **same** response (bots learn nothing), is stored with
+   `status=spam` and `spam_reason`, and triggers no email (D-027).
 6. No auto-reply/promotional email. No data sent to analytics/ad platforms; conversion events (M8) carry no PII.
 
 Optional later (needs approval): Cloudflare Turnstile CAPTCHA (free) if spam gets through.

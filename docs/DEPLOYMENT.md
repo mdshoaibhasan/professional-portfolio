@@ -22,6 +22,8 @@ Status: **Hosting unknown — no deployment architecture is final.** Nothing is 
 | 14 | Domain status: owned? registrar? DNS managed where? | |
 | 15 | Can the API live on the same domain (e.g., `example.com/api/`) or must it be a subdomain? | |
 | 16 | Backups provided by host? Frequency/retention? | |
+| 17 | SMTP details for inquiry notifications (host mailbox or other), and the address that should receive them | |
+| 18 | Is there a reverse proxy/CDN (e.g. Cloudflare) in front of the site? (sets `API_NUM_PROXIES`) | |
 
 Tip: in cPanel, check **Software → Setup Python App** for available versions.
 

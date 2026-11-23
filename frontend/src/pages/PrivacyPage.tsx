@@ -55,8 +55,10 @@ export default function PrivacyPage() {
           </p>
           <p>
             <strong className="text-fg">Basic technical data</strong> needed to run and protect the
-            site, such as request logs kept by the hosting provider and a one-way hashed version of
-            your IP address used to limit spam on the inquiry form.
+            site: request logs kept by the hosting provider, and your IP address. To stop repeated
+            or automated submissions, the IP address is held temporarily (for up to one hour) to
+            count recent messages. It is not stored with your inquiry — only a one-way hashed
+            version is kept, so repeated abuse can be recognised without keeping the address itself.
           </p>
         </Block>
 

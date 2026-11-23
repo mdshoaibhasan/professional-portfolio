@@ -28,12 +28,19 @@ export function ServiceCard({
   );
 }
 
-/** Secondary (social media) services in a deliberately compact row. */
-export function SecondaryServices({ services }: { services: ServiceDetail[] }) {
+/** Secondary (digital marketing) services in a deliberately compact row, kept apart from development. */
+export function SecondaryServices({
+  services,
+  label = "Digital marketing",
+}: {
+  services: ServiceDetail[];
+  /** Pass null when a surrounding heading already names the category. */
+  label?: string | null;
+}) {
   if (services.length === 0) return null;
   return (
     <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg border border-dashed border-line-strong px-5 py-4">
-      <p className="label-mono text-muted">Also offered</p>
+      {label && <p className="label-mono text-muted">{label}</p>}
       <ul className="flex flex-wrap gap-x-6 gap-y-2">
         {services.map((service) => (
           <li key={service.slug}>

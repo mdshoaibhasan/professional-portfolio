@@ -51,7 +51,20 @@ class Profile(models.Model):
 
     @classmethod
     def load(cls) -> "Profile":
-        return cls.objects.get_or_create(pk=1, defaults={"headline": "Software Developer"})[0]
+        """The profile, or an unsaved default. Reading must never create the row: seed_content only
+        fills a missing profile, so a row created by an early API request would block seeding for good."""
+        return cls.objects.filter(pk=1).first() or cls(pk=1, headline="Software Engineer")
+
+
+class SeedRecord(models.Model):
+    """One row per item seed_content has created ("profile", "skills", "service:<slug>", ...).
+    A recorded item is never created again, so content deleted in the admin stays deleted."""
+
+    key = models.CharField(max_length=120, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return self.key
 
 
 class SocialLink(Ordered):
@@ -64,13 +77,24 @@ class SocialLink(Ordered):
 
 class Skill(Ordered):
     class Category(models.TextChoices):
-        LANGUAGE = "language", "Language"
-        FRAMEWORK = "framework", "Framework / API"
-        DATA = "data", "Data"
+        """Capability area (docs/POSITIONING.md §2–§3)."""
+
+        BACKEND = "backend", "Backend"
+        FRONTEND = "frontend", "Frontend"
+        MOBILE = "mobile", "Mobile"
+        DATABASE = "database", "Database"
         TOOL = "tool", "Tool"
+
+    class Tier(models.TextChoices):
+        """Learning and interested skills are shown separately and never presented as expertise (D-031)."""
+
+        USE = "use", "Use — used in real work"
+        LEARNING = "learning", "Currently learning"
+        INTERESTED = "interested", "Interested in"
 
     name = models.CharField(max_length=60, unique=True)
     category = models.CharField(max_length=12, choices=Category.choices)
+    tier = models.CharField(max_length=10, choices=Tier.choices, default=Tier.USE)
     level_label = models.CharField(
         max_length=30, blank=True, help_text='Only if truthful and useful, e.g. "Basic". Never a percentage.'
     )

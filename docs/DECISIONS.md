@@ -55,7 +55,7 @@ White on `#2563EB` ≈ 5.2:1 ✅ (buttons OK); white on `#8B5CF6` ≈ 4.2:1 ❌ 
 *Proposal:* keep `#2563EB` for filled buttons; use a lighter blue (e.g., `#60A5FA`, ≈ 7.6:1) for links/text on dark;
 avoid white body text on violet fills. Exact values verified with a contrast tool in M2.
 
-### D-012 · 2026-11-23 · Accepted (owner, 2026-11-23)
+### D-012 · 2026-11-23 · Accepted (owner, 2026-11-23) — hero card partially superseded by D-032 (proposed)
 **Homepage reduced from 13 listed sections to 8** (Hero incl. intro + technical highlights + BackgroundBridge spec card →
 Selected work → Services → About & stack → Process → Experience & education → Contact CTA → Footer).
 *Rationale:* spec asks to avoid unnecessary sections and to show identity + strongest project within seconds.
@@ -114,3 +114,63 @@ is down, a standalone error page is shown.
 (GET/HEAD/OPTIONS only, `AllowAny`); JSON-only renderer in production; anonymous throttle 120/min backed by the
 database cache in production (D-009). `Profile` refuses a second create instead of silently overwriting.
 HSTS include-subdomains/preload stay off (their deploy-check warnings are silenced on purpose) until Milestone 10.
+
+### D-025 · 2026-11-23 · Accepted (owner, M6 approval 2026-11-23)
+**Signed form token instead of Django CSRF for the inquiry endpoint.** Anonymous-only endpoint, no session; a signed
+timestamp from `GET /inquiries/form-token/` (unreadable cross-site without CORS) proves same-origin and enables a
+minimum fill time (3 s) and a 24 h expiry. An invalid/expired token returns 400 and the form refreshes it automatically.
+
+### D-026 · 2026-11-23 · Accepted (owner, M6 approval 2026-11-23)
+**`REST_FRAMEWORK["NUM_PROXIES"] = 0` by default.** DRF's default trusts any `X-Forwarded-For` header, which would let
+bots bypass rate limits. Set `API_NUM_PROXIES` to the host's real proxy count in Milestone 10. Test-covered.
+
+### D-027 · 2026-11-23 · Accepted (owner, M6 approval 2026-11-23)
+**Spam is stored, not dropped**, with `status=spam` and a reason (`honeypot` / `too_fast`), so false positives can be
+recovered in the admin. No email is sent for spam. Retention/purging is part of Milestone 7.
+
+### D-028 · 2026-11-23 · Accepted (owner, M6 approval 2026-11-23)
+**Frontend testing: Vitest 5 + Testing Library + jsdom** (per D-017). `npm run check` now runs the tests too.
+Form libraries (React Hook Form, Zod, resolvers) load only in the Contact page chunk.
+
+### D-029 · 2026-11-23 · Accepted (owner direction, 2026-11-23)
+**Positioning: Software Engineer, technology-flexible.** Headline "Building Practical Software Solutions."; owner's
+introduction text. Replaces "Software Developer (Python / Django / DRF)" as the identity (MASTER_PROMPT §2–§3) and
+the draft headline "Python & Django Developer". Python/Django stay as verified skills and project evidence.
+Source of truth: [POSITIONING.md](POSITIONING.md). *Conflicts resolved:* MASTER_PROMPT §2, §4, §5, §7; D-012 (hero);
+the D-003 rationale ("matches owner's Django/DRF strengths") still holds as a reason for the **site's** stack, not as
+an identity statement.
+
+### D-030 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**Six services in two categories** (POSITIONING §4): five primary (Web Development, Web Application Development,
+Backend and API Development, Mobile Application Development, Business and Custom Software Solutions) and one secondary
+(Digital Marketing & Social Media Management, merging the two current social services). Supersedes MASTER_PROMPT §4's
+five-service list. *Open:* slugs, scope of the new "Business and Custom Software Solutions" service, and whether each
+service is deliverable today (CONTENT_CHECKLIST §G). Existing database rows are not updated by `seed_content`.
+
+### D-031 · 2026-11-23 · Accepted (owner, 2026-11-23)
+**Skill tiers: Use / Learning / Interested**, shown in separate groups, never mixed (POSITIONING §3). Needs a `tier`
+field on `Skill` (default `use`), exposed in `/api/v1/site/` and `SkillSerializer`, plus a frontend type update.
+`category` becomes the capability area (backend / frontend / mobile / database / tool) instead of
+language / framework / data / tool. Small schema change, so implementation needs approval.
+
+### D-032 · 2026-11-23 · Accepted (owner, 2026-11-23; design change, reason: D-029 / POSITIONING §5–§6)
+**Homepage hero: replace the BackgroundBridge spec card with a "Capabilities" spec card.** Same Concept A component
+style (mono spec sheet, one glow). It lists the capability areas backed by verified skills. The mobile
+"Featured: BackgroundBridge →" link is removed. BackgroundBridge stays in "01 / Selected work" as one card among the
+selected projects. Partially supersedes D-012 (section order otherwise unchanged) and DESIGN_SYSTEM §"Homepage" item 1.
+*Reason:* the new direction forbids BackgroundBridge as the defining identity or disproportionately prominent.
+
+### D-033 · 2026-11-23 · Accepted (owner asked for the fix, 2026-11-23)
+**Seeding tracks what it created (`SeedRecord`).** Fixes two review bugs: (1) `Profile.load()` no longer creates a
+row on read; it returns an unsaved default, so an early `GET /api/v1/site/` can't block the profile seed;
+(2) a project or service deleted in the admin was recreated, and published, by the next `seed_content`. Each seeded
+item now gets a record and is never created twice; new items in `content.json` are still created. A database
+seeded before this change is adopted (recorded, nothing created). *Alternatives rejected:* seeding only into empty
+tables (new services could never be added later); seeding projects unpublished (a fresh install would show none).
+
+### D-034 · 2026-11-23 · Accepted (owner asked for the fix, 2026-11-23); amends D-025
+**Inquiry form tokens are single use and unique.** A token is consumed after the fields validate (so a visitor can
+fix a typo and resend) and remembered in the default cache (DatabaseCache in production, shared across workers)
+until it expires. A reused token gets the same 400 as an expired one, and the existing form recovery fetches a new
+token. Tokens now sign a random value: signing a constant gave identical tokens to visitors who loaded the form in
+the same second. The lifetime stays 24 h.

@@ -27,6 +27,8 @@ src/
 │   ├── layout/   Navbar (accessible mobile menu), Footer, SkipLink, PageHeader
 │   └── ui/       ButtonLink, button-styles, Seo, SectionLabel
 ├── content/      static navigation config (site content comes from the API)
+├── features/     contact/ — inquiry form, Zod schema, API calls, tests
+├── test/         Vitest setup
 ├── pages/        one component per route
 ├── types/        content types mirroring the planned API
 ├── lib/          small utilities

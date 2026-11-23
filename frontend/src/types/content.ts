@@ -69,11 +69,16 @@ export interface SocialLink {
   url: string;
 }
 
-export type SkillCategory = "language" | "framework" | "data" | "tool";
+/** Capability area (docs/POSITIONING.md §2–§3). */
+export type SkillCategory = "backend" | "frontend" | "mobile" | "database" | "tool";
+
+/** "learning" and "interested" are shown separately and never presented as expertise (D-031). */
+export type SkillTier = "use" | "learning" | "interested";
 
 export interface Skill {
   name: string;
   category: SkillCategory;
+  tier: SkillTier;
   /** Only set when it is truthful and useful, e.g. "Basic". Never a percentage. */
   level_label: string | null;
 }

@@ -8,16 +8,19 @@ Read this file fully before making changes. Full specification: [docs/MASTER_PRO
 ## 1. Project in one paragraph
 
 A premium, production-ready personal portfolio and freelance website for a Computer Science & Engineering
-student/software developer based in Bangladesh. Primary identity: **Software Developer (Python / Django / DRF)**.
-Secondary: freelance services (web, API, mobile, social media management/advertising).
-The flagship case study is **BackgroundBridge**, a Python/Django project whose claims must be verified from source code.
+student based in Bangladesh. Primary identity: **Software Engineer**, technology-flexible, never positioned as a
+single-stack (e.g. "Python/Django") specialist. Headline: "Building Practical Software Solutions."
+Primary offering: software development services. Secondary, kept visibly separate: digital marketing & social media management.
+**BackgroundBridge** is an independent selected project (Python/Django), not the site's defining identity; its claims
+must be verified from source code. Positioning source of truth: [docs/POSITIONING.md](docs/POSITIONING.md) (amends MASTER_PROMPT).
 
 ## 2. Current status
 
 | Item | Status |
 |---|---|
-| Current milestone | **Milestone 6 — Contact System (in progress, approved 2026-11-23)** |
+| Current milestone | **Milestone 6 — Contact System ✅ complete, approved 2026-11-23** |
 | Next milestone | Milestone 7 — Admin & Content Management (**not approved yet**) |
+| Positioning update | Software Engineer (D-029). D-030 to D-032 approved and **implemented 2026-11-23**; draft service copy awaits owner review (POSITIONING.md §7) |
 | Hosting | Unknown — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
 | BackgroundBridge source | Inspected read-only 2026-11-23 → [docs/BACKGROUNDBRIDGE_AUDIT.md](docs/BACKGROUNDBRIDGE_AUDIT.md). Pre-launch; never describe it as live. |
 
@@ -45,7 +48,11 @@ Update this table whenever a milestone changes state. Progress detail lives in [
   [docs/CONTENT_CHECKLIST.md](docs/CONTENT_CHECKLIST.md). Placeholders must never ship to production (QA checks for `TODO(content)`).
 - **No** fake skill percentage bars, fake metrics, fake testimonials, or fake logos.
 - Skill levels must match reality: Flutter/Dart and Linux are **basic**. Do not upgrade them in copy.
-- Software development is the primary identity; marketing/social services are secondary and must look secondary.
+- Skills have three tiers: **Use / Learning / Interested**. Never present Learning or Interested items as expertise.
+  A technology appears only if verified (PHP, CSS, JavaScript and others are **not** verified yet; see CONTENT_CHECKLIST §F).
+- Software development is the primary identity; digital marketing is secondary, a separate category, and must look secondary.
+  Never mix marketing into engineering capabilities or skills.
+- BackgroundBridge is an independent project: never framed as employment or client work, never given disproportionate prominence.
 - **BackgroundBridge:** every technical claim must trace to inspected source code (file paths recorded in the case-study
   notes). A name in a README or a model/URL stub is **not** proof a feature works. Never reproduce secrets, credentials,
   private data, or sensitive records from that codebase.
@@ -100,12 +107,12 @@ personal-portfolio/
 
 Frontend (run inside `frontend/`, details in [frontend/README.md](frontend/README.md)):
 - `npm run dev` — dev server on :5173 · `npm run build` — production build · `npm run preview` — serve the build
-- `npm run check` — type-check + lint + Prettier check (**must pass before any commit**)
+- `npm run check` — type-check + lint + Prettier check + Vitest tests (**must pass before any commit**) · `npm test` — tests only
 
 Backend (run inside `backend/`, details in [backend/README.md](backend/README.md)):
 - `.venv/Scripts/python.exe manage.py runserver` — API on :8000 · `manage.py test` — test suite
 - `.venv/Scripts/ruff.exe check . && .venv/Scripts/ruff.exe format --check .` — lint/format (**must pass before any commit**)
-- `manage.py seed_content` — initial content (never overwrites admin edits)
+- `manage.py seed_content` — initial content (each item once: never overwrites admin edits or restores deleted content)
 
 ## 8. Local environment (observed 2026-11-23)
 

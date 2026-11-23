@@ -5,6 +5,7 @@ import { useSiteContent } from "@/app/site-content";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Seo } from "@/components/ui/Seo";
 import { Fact, Todo } from "@/components/ui/Todo";
+import { ContactForm } from "@/features/contact/ContactForm";
 
 const checklist = [
   "What you want to build, and the problem it solves",
@@ -37,11 +38,11 @@ export default function ContactPage() {
               You&rsquo;re asking about: <strong className="text-fg">{service.title}</strong>
             </p>
           )}
-          {/* The inquiry form (validation, spam protection, email notification) is built in Milestone 6. */}
-          <div className="rounded-lg border border-dashed border-line-strong p-8 text-sm text-muted">
-            <p className="label-mono text-warning">Milestone 6</p>
-            <p className="mt-2">The inquiry form is added in Milestone 6.</p>
-          </div>
+          <ContactForm
+            services={services}
+            initialService={params.get("service") ?? undefined}
+            fallbackEmail={profile.email_public}
+          />
 
           <h2 className="mt-12 text-h3">What to include</h2>
           <ul className="mt-4 list-disc space-y-2 pl-5 text-fg-secondary marker:text-muted">
