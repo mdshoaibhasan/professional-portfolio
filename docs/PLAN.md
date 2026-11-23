@@ -13,7 +13,7 @@ Status legend: ✅ done · 🟡 awaiting approval · ⏳ not started · ⛔ bloc
 | 7 | Admin & Content Management | ✅ Approved 2026-11-23 | Retention period (owner decision) |
 | 8 | SEO & Analytics | ✅ Approved 2026-11-23 | Domain name, tracker IDs (owner) |
 | 9 | Quality Assurance | ✅ Approved 2026-11-23 (content gate still open: release check fails until placeholders are filled) | Owner content (20 placeholders) |
-| 10 | Deployment | 🟡 In progress (approved): Railway Free demo prepared, awaiting owner's dashboard setup | Owner: Railway account + variables (DEPLOYMENT A3); later cPanel host |
+| 10 | Deployment | 🟡 Railway demo **live** (https://portfolio-production-78c3b121.up.railway.app), verified; admin account + backup download pending SSH key | Owner: approve SSH key; later cPanel host |
 
 Each milestone ends with: verification → doc updates → report → **approval gate** → Git checkpoint commit (with approval).
 

@@ -2,7 +2,7 @@
 
 | Stage | Host | Purpose | Status |
 |---|---|---|---|
-| 1 | **Railway Free** | Temporary public demo, $0 | Repo prepared 2026-11-23; **not deployed yet** (Part A) |
+| 1 | **Railway** (trial now, Free afterwards) | Temporary public demo, $0 | **Live since 2026-11-23** at https://portfolio-production-78c3b121.up.railway.app, verified (A4). Admin account and backup download pending an SSH key |
 | 2 | **cPanel shared hosting** | Final production on a custom domain | Host not chosen; Part B |
 
 The same code runs on both. Everything host-specific is an environment variable, apart from two small files: the
@@ -34,11 +34,17 @@ Checked in Railway's official docs on 2026-11-23. Prices and limits can change, 
 | Logs | Kept 3 days | |
 | Config files | `railway.json`/`railway.toml` are deprecated and **stop being read on 2026-12-01** | Not used; settings are entered in the dashboard (A3) |
 
-**Assumptions to confirm during the first deployment:**
+**Verified on the first deployment (2026-11-23):**
+- Railpack installs **Python 3.12.16 and Node 22.23.4** in one service from `railpack.json`.
+- Railway's proxy **overwrites** `X-Real-IP`: six requests with forged values were all counted against the real
+  connection (A4 step 5).
+- The volume persists across restarts: the second start found the seeded data (`skipped (seeded before)`).
+- The account started on Railway's **trial** (Hobby features, $5 credit, no card), not the Free plan.
+  Sleep-when-idle was switched **on** manually, because trial services are always-on by default.
+
+**Still to confirm:**
 - Memory: one worker is expected to use about 120–150 MB, i.e. roughly 15 awake hours a day within $1. Check
   **Project → Usage** after the first week.
-- The build: Railpack installing both Node and Python from `railpack.json` isn't documented for this exact layout.
-- Railway's proxy *overwrites* `X-Real-IP` (verified in A4 step 5 before trusting it).
 - Whether volume backups (A5) and `railway ssh` work on Free, and whether ssh works while the service sleeps.
 
 ### A2. What's in the repository for Railway
@@ -67,7 +73,9 @@ described.
 4. **Settings:**
    - Build → Custom Build Command: `sh deploy/railway/build.sh`
    - Deploy → Custom Start Command: `sh deploy/railway/start.sh`
-   - Deploy → Healthcheck Path: `/robots.txt`
+   - **No health check.** Railway rejected `/robots.txt` as a path, and a health check would fail anyway: Railway calls
+     it over plain HTTP, and Django's HTTPS redirect answers with 301, not 2xx. With a volume, redeploys have a short
+     downtime regardless.
    - Replicas: 1 (volumes don't allow more). Leave Serverless (sleep) **on**: it's what keeps usage under $1.
 5. **Variables** (service → Variables → Raw Editor). Replace `<domain>` with the host from step 2, without `https://`:
    ```
@@ -83,13 +91,19 @@ described.
    MEDIA_ROOT=/data/media
    SERVE_MEDIA=True
    SEO_ALLOW_INDEXING=False
+   RAILPACK_INSTALL_CMD=python -m venv /app/.venv && /app/.venv/bin/pip install -r requirements.txt
    ```
+   `RAILPACK_INSTALL_CMD` is needed because Railpack's default install copies only the root `requirements.txt`
+   (for caching), so the nested `-r backend/requirements/prod.txt` is missing. The custom command runs after all
+   files are copied; the Railway scripts activate `/app/.venv` themselves.
    Leave `INQUIRY_NOTIFY_EMAIL` and all `EMAIL_*` **unset**: SMTP is blocked, and an unset address makes the app skip
    sending instead of waiting for a blocked connection. Never commit or share these values.
-6. **Deploy** (or Redeploy). Build logs should show `npm run build` and `collectstatic`. Deploy logs should show
+6. **Deploy:** `railway redeploy --service portfolio --from-source --yes` deploys the latest commit on `main`. Pushes
+   do **not** deploy automatically (no deploy trigger is configured), which keeps builds and credit use deliberate. Build logs should show `npm run build` and `collectstatic`. Deploy logs should show
    the migrations, `seed_content`, and gunicorn listening on the port.
 7. **Admin account:** install the Railway CLI (`npm install -g @railway/cli`), then `railway login`, `railway link`
-   (choose the project), and:
+   (choose the project). `railway ssh` needs an SSH key on your computer (`ssh-keygen -t ed25519`) that Railway
+   registers on first use. Then:
    ```
    railway ssh
    cd backend && python manage.py createsuperuser
@@ -98,8 +112,14 @@ described.
 
 ### A4. Verification after the first deploy
 
-Deployment counts as successful only after these pass against the real URL. I can run 1–4 and 6 once you send me
-the address.
+Deployment counts as successful only after these pass against the real URL.
+
+**Results on https://portfolio-production-78c3b121.up.railway.app, 2026-11-23:** 1 ✅ (all pages 200, unknown pages and API paths 404, `/admin/` 404,
+`http` → 301 `https`) · 2 ✅ (CSP, Permissions-Policy, X-Robots-Tag, HSTS, nosniff, X-Frame-Options) · 3 ✅ ·
+4 ✅ (30 page views, 0 failures, Edge and Chrome; 30 placeholders, because the live database has no owner name yet)
+· 5 ✅ (forged `X-Real-IP` ignored: 400 ×4, then 429, after one earlier real submission) · 6 ✅ restart persistence
+(seeded data found; the inquiry check needs SSH) · 7 ⏳ needs the admin account (SSH). The contact form was submitted
+end to end in a real browser (success shown, no CSP errors); that test inquiry is marked "QA Check (delete me)".
 
 1. Every page returns 200, unknown pages return 404, and `http://` redirects to `https://`.
 2. Headers on a page: `Content-Security-Policy`, `Permissions-Policy`, `X-Robots-Tag: noindex, nofollow`,

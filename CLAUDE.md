@@ -19,7 +19,7 @@ must be verified from source code. Positioning source of truth: [docs/POSITIONIN
 | Item | Status |
 |---|---|
 | Current milestone | **Milestone 9 — Quality Assurance ✅ approved 2026-11-23** (content gate open: 20 placeholders, see docs/QA_REPORT.md) |
-| Next milestone | Milestone 10 — Deployment (**approved**; Railway Free demo prepared, not yet deployed; cPanel later) |
+| Next milestone | Milestone 10 — Deployment (**approved**; Railway demo live at https://portfolio-production-78c3b121.up.railway.app, noindex; cPanel later) |
 | Positioning update | Software Engineer (D-029). D-030 to D-032 approved and **implemented 2026-11-23**; draft service copy awaits owner review (POSITIONING.md §7) |
 | Hosting | Stage 1 Railway Free (noindex demo), Stage 2 cPanel shared hosting — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Keep both working: no Railway-only code paths, SQLite only |
 | BackgroundBridge source | Inspected read-only 2026-11-23 → [docs/BACKGROUNDBRIDGE_AUDIT.md](docs/BACKGROUNDBRIDGE_AUDIT.md). Pre-launch; never describe it as live. |
