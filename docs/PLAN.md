@@ -179,6 +179,9 @@ only), Stage 2 **cPanel shared hosting** (production). Prepared 2026-11-23, **no
 - 2026-11-23: **deployed** to https://portfolio-production-78c3b121.up.railway.app (Railway trial account, noindex demo). Verified live: pages, static files,
   API, security headers, noindex, browser QA (Edge and Chrome), live form submission, X-Real-IP spoofing check,
   restart persistence, admin sign-in, backup → download → integrity check → restore. Measured 64–84 MB RAM.
+- 2026-11-23: Railway project cleanup. The unused empty project `zestful-upliftment` was inspected (no services,
+  data or variables) and its deletion requested; Railway removes it after a 48-hour grace period (2026-11-25).
+  Resources of the live project are listed in [DEPLOYMENT.md](DEPLOYMENT.md) A9.
 - Remaining for production: content placeholders, cPanel host (Part B).
 
 - Host-specific production config, static/media serving, HTTPS, domain/DNS, email (SPF/DKIM).

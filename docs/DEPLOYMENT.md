@@ -228,6 +228,31 @@ and approval.
   [QA_REPORT.md](QA_REPORT.md) §6). The demo shows them as visible TODO boxes.
 - If the monthly credit runs out, the site is offline until the next billing cycle.
 
+### A9. Live Railway resources
+
+Workspace "MD SHOAIB HASAN's Projects" (`ccd7b182-627e-48eb-be01-8893c67b736e`). The admin path and all secrets are
+**not** recorded here; they live only in the service variables and the owner's private notes.
+
+| Resource | Name | ID / value |
+|---|---|---|
+| Project | `unique-clarity` | `6af0ea04-96f8-465b-a8a2-cbce530d1b72` |
+| Environment | `production` | `308dfc3e-cb41-4305-a7fc-5a90f1d5a5d3` |
+| Service | `portfolio` (source: GitHub `mdshoaibhasan/professional-portfolio`, branch `main`) | `dff9c132-ebea-41b3-b059-0e04e3f35cf7` |
+| Volume | `portfolio-volume`, 500 MB, mounted at `/data` | `022cb2dd-96eb-481c-bedb-6241bfe93558` |
+| Domain | Railway-provided | `portfolio-production-78c3b121.up.railway.app` |
+
+`railway volume` commands need the service and environment IDs above in non-interactive use, for example
+`railway volume --service <service ID> --environment <environment ID> files --volume portfolio-volume …` (A5).
+
+**Project cleanup (2026-11-23).** The account had two empty projects, `unique-clarity` and `zestful-upliftment`,
+created about 80 seconds apart before the deployment started. The portfolio was deployed into `unique-clarity`.
+`zestful-upliftment` (`97e3d22c-79e3-4e41-b6b7-2440fae7e68d`) was inspected read-only first: 0 services,
+deployments, databases, volumes, domains and variables, and no link to the portfolio. Its deletion was then
+requested with the owner's approval. Railway applies a **48-hour grace period**: the project shows
+`deletedAt: 2026-11-25 10:42 UTC` and remains listed, and restorable from the dashboard, until then. After that, the
+account has the single project the Free plan allows. The live site was checked after the request (deployment
+SUCCESS, volume Ready, homepage, API and admin login 200).
+
 ---
 
 ## Part B: cPanel shared hosting (production)
