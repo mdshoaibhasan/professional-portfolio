@@ -13,7 +13,7 @@ Status legend: ✅ done · 🟡 awaiting approval · ⏳ not started · ⛔ bloc
 | 7 | Admin & Content Management | ✅ Approved 2026-11-23 | Retention period (owner decision) |
 | 8 | SEO & Analytics | ✅ Approved 2026-11-23 | Domain name, tracker IDs (owner) |
 | 9 | Quality Assurance | ✅ Approved 2026-11-23 (content gate still open: release check fails until placeholders are filled) | Owner content (20 placeholders) |
-| 10 | Deployment | 🟡 Railway demo **live** (https://portfolio-production-78c3b121.up.railway.app), verified; admin account + backup download pending SSH key | Owner: approve SSH key; later cPanel host |
+| 10 | Deployment | 🟡 Stage 1 done: Railway demo **live** and fully verified (https://portfolio-production-78c3b121.up.railway.app). Stage 2 (cPanel) not started | Owner content (placeholders), cPanel host |
 
 Each milestone ends with: verification → doc updates → report → **approval gate** → Git checkpoint commit (with approval).
 
@@ -176,8 +176,10 @@ only), Stage 2 **cPanel shared hosting** (production). Prepared 2026-11-23, **no
 - Trusted client-IP header replacing `API_NUM_PROXIES` (D-044); demo noindex and optional media serving (D-045);
   `backup_db` / `restore_db` (D-046); `purge_inquiries` limited to closed inquiries and spam.
 - [DEPLOYMENT.md](DEPLOYMENT.md) rewritten: Part A Railway, Part B cPanel.
-- Remaining: owner creates the Railway service (A3); verification against the real URL (A4), including the
-  `X-Real-IP` spoofing check and the first real backup download (A5).
+- 2026-11-23: **deployed** to https://portfolio-production-78c3b121.up.railway.app (Railway trial account, noindex demo). Verified live: pages, static files,
+  API, security headers, noindex, browser QA (Edge and Chrome), live form submission, X-Real-IP spoofing check,
+  restart persistence, admin sign-in, backup → download → integrity check → restore. Measured 64–84 MB RAM.
+- Remaining for production: content placeholders, cPanel host (Part B).
 
 - Host-specific production config, static/media serving, HTTPS, domain/DNS, email (SPF/DKIM).
 - Deployment runbook, rollback, and backup strategy (SQLite + media).

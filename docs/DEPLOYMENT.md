@@ -2,7 +2,7 @@
 
 | Stage | Host | Purpose | Status |
 |---|---|---|---|
-| 1 | **Railway** (trial now, Free afterwards) | Temporary public demo, $0 | **Live since 2026-11-23** at https://portfolio-production-78c3b121.up.railway.app, verified (A4). Admin account and backup download pending an SSH key |
+| 1 | **Railway** (trial now, Free afterwards) | Temporary public demo, $0 | **Live since 2026-11-23** at https://portfolio-production-78c3b121.up.railway.app, fully verified (A4, A5) |
 | 2 | **cPanel shared hosting** | Final production on a custom domain | Host not chosen; Part B |
 
 The same code runs on both. Everything host-specific is an environment variable, apart from two small files: the
@@ -42,9 +42,10 @@ Checked in Railway's official docs on 2026-11-23. Prices and limits can change, 
 - The account started on Railway's **trial** (Hobby features, $5 credit, no card), not the Free plan.
   Sleep-when-idle was switched **on** manually, because trial services are always-on by default.
 
+- Measured usage: **64–84 MB RAM**, about 0.01 vCPU idle (estimate was 120–150 MB). Even always-on that is roughly
+  $0.70–0.90 a month, inside the $1; sleep lowers it further. Check **Project → Usage** if traffic grows.
+
 **Still to confirm:**
-- Memory: one worker is expected to use about 120–150 MB, i.e. roughly 15 awake hours a day within $1. Check
-  **Project → Usage** after the first week.
 - Whether volume backups (A5) and `railway ssh` work on Free, and whether ssh works while the service sleeps.
 
 ### A2. What's in the repository for Railway
@@ -102,8 +103,20 @@ described.
    do **not** deploy automatically (no deploy trigger is configured), which keeps builds and credit use deliberate. Build logs should show `npm run build` and `collectstatic`. Deploy logs should show
    the migrations, `seed_content`, and gunicorn listening on the port.
 7. **Admin account:** install the Railway CLI (`npm install -g @railway/cli`), then `railway login`, `railway link`
-   (choose the project). `railway ssh` needs an SSH key on your computer (`ssh-keygen -t ed25519`) that Railway
-   registers on first use. Then:
+   (choose the project). `railway ssh` needs an SSH key registered with Railway, and Railway's host key in
+   `known_hosts`. Done on 2026-11-23 for this computer:
+   ```
+   ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519            # no key existed before
+   railway ssh keys add --key "<key comment>" --name "<label>"   # a file path was rejected; the comment works
+   ssh-keyscan -t ed25519 ssh.railway.com >> ~/.ssh/known_hosts
+   ```
+   Railway doesn't publish its host-key fingerprint, so the key was trusted on first use and recorded:
+   `ssh.railway.com ED25519 SHA256:+S1xg92FrnHz6pY3bpkmh1OGtWQGNANXilPzlxA7B1g`. If SSH ever reports a
+   *changed* host key, stop and check with Railway before accepting it.
+
+   The admin account `owner` was created non-interactively, with the password piped over stdin so it never
+   appears in commands or logs. It is stored only in `~/portfolio-railway-admin.txt` on the owner's computer.
+   Interactive alternative:
    ```
    railway ssh
    cd backend && python manage.py createsuperuser
@@ -112,14 +125,16 @@ described.
 
 ### A4. Verification after the first deploy
 
-Deployment counts as successful only after these pass against the real URL.
+Deployment counts as successful only after these pass against the real URL. All passed on 2026-11-23.
 
 **Results on https://portfolio-production-78c3b121.up.railway.app, 2026-11-23:** 1 ✅ (all pages 200, unknown pages and API paths 404, `/admin/` 404,
 `http` → 301 `https`) · 2 ✅ (CSP, Permissions-Policy, X-Robots-Tag, HSTS, nosniff, X-Frame-Options) · 3 ✅ ·
 4 ✅ (30 page views, 0 failures, Edge and Chrome; 30 placeholders, because the live database has no owner name yet)
 · 5 ✅ (forged `X-Real-IP` ignored: 400 ×4, then 429, after one earlier real submission) · 6 ✅ restart persistence
-(seeded data found; the inquiry check needs SSH) · 7 ⏳ needs the admin account (SSH). The contact form was submitted
-end to end in a real browser (success shown, no CSP errors); that test inquiry is marked "QA Check (delete me)".
+(seeded data and a real inquiry submitted before the restart were both still there) · 7 ✅ admin sign-in over
+HTTPS (Secure, HttpOnly session cookie); the test inquiry was stored as `new`, IP hashed, "Notification email not
+configured", then deleted. The contact form was submitted
+end to end in a real browser (success shown, no CSP errors).
 
 1. Every page returns 200, unknown pages return 404, and `http://` redirects to `https://`.
 2. Headers on a page: `Content-Security-Policy`, `Permissions-Policy`, `X-Robots-Tag: noindex, nofollow`,
@@ -152,8 +167,9 @@ railway ssh -- sh -c "cd backend && python manage.py backup_db"
 ```
 
 **Downloading it.** The volume is mounted at `/data`, so `/data/backups/x` is `/backups/x` inside the volume.
+`--volume` must come **before** the subcommand, and is required when the CLI can't prompt:
 ```
-railway volume files download /backups/db-20261201-093000.sqlite3 ./db-20261201-093000.sqlite3
+railway volume files --volume portfolio-volume download /backups/db-20261201-093000.sqlite3 ./db-20261201-093000.sqlite3
 ```
 Railway's docs also describe `scp` and `sftp` against `ssh.railway.com` (username = the service domain):
 ```
@@ -164,7 +180,7 @@ Don't use `railway ssh -- cat file > local`: binary-safe output isn't documented
 **Restoring.** `restore_db` checks the file is an intact Django SQLite database, saves the current data as
 `pre-restore-*.sqlite3` first, restores, then applies migrations:
 ```
-railway volume files upload ./db-20261201-093000.sqlite3 /backups/restore.sqlite3
+railway volume files --volume portfolio-volume upload ./db-20261201-093000.sqlite3 /backups/restore.sqlite3
 railway ssh -- sh -c "cd backend && python manage.py restore_db /data/backups/restore.sqlite3 --yes"
 ```
 
@@ -173,12 +189,13 @@ railway ssh -- sh -c "cd backend && python manage.py restore_db /data/backups/re
 **Railway's own volume backups** (service → Backups: manual, or daily kept 6 days). The docs don't say whether
 Free includes them; if the tab is available, enable the daily schedule as an extra layer.
 
-**Status of these commands:**
-- Tested locally: `backup_db` and `restore_db`, on a real copy of the database (backup → delete → restore →
-  migrations), plus 6 automated tests.
-- From Railway's docs, not yet run against the service: the `railway` and `scp` commands. I'll run them with you on
-  the first deployment and update this section with the exact results. Until then, treat them as unverified.
-- Not documented: whether ssh and file transfer wake a sleeping service. Open the site first to wake it.
+**Status of these commands:** verified on the live service on 2026-11-23. A backup was taken over `railway ssh`,
+downloaded with `railway volume files ... download` (266,240 bytes, identical size), and checked locally (SQLite
+integrity check `ok`, restore validator accepts it, expected content). It was then uploaded back and restored with
+`restore_db` (safety copy kept, migrations applied, site 200, content unchanged). The `scp` route is documented by
+Railway but wasn't needed. Open the site first to wake the service before using ssh or file transfer.
+On Windows Git Bash, prefix commands with `MSYS_NO_PATHCONV=1`, or `/backups/...` is rewritten into a Windows
+path. Local copies are kept in `~/portfolio-backups/` (outside the repo: backups contain personal data).
 
 **Routine:** before every deploy, run a backup and download it. Keep at least one copy off Railway.
 
